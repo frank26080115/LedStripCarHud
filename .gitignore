@@ -77,3 +77,9 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+
+# =====
+# Do not share STLs
+# =====
+
+*.STL
