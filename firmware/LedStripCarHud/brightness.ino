@@ -23,7 +23,12 @@ uint8_t get_brightness(void)
 	dbg_printf("get_brightness: sun=%d, pot1=%d, pot2=%d, r=%d, ", sun, pot_1, pot_2, r);
 
 	c = chase >> BRIGHTNESS_FILTER_SHIFT;
-	chase += (r > c) ? 1 : ((r < c) ? (-1) : 0);
+	if (r > c && c < 255) {
+		chase += 1;
+	}
+	else if (r < c && c > 0) {
+		chase -= 1;
+	}
 	r = chase >> BRIGHTNESS_FILTER_SHIFT;
 
 	dbg_printf("chase=%d, out=%d\n", chase, r);

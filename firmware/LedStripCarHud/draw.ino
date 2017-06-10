@@ -77,6 +77,10 @@ void draw_voltage(float voltage, led_t* strip, uint8_t tick_brightness, uint8_t 
 	int vidx;
 	float vidxf;
 	char isunder = voltage < VOLTAGE_NORMAL;
+	#ifdef FADING_HEAD
+	float headbright;
+	int32_t headbrighti;
+	#endif
 
 	mididx = LED_STRIP_SIZE;
 	//mididx += 1;
@@ -89,7 +93,19 @@ void draw_voltage(float voltage, led_t* strip, uint8_t tick_brightness, uint8_t 
 	vidxf -= VOLTAGE_MIN;
 	vidxf *= mididx;
 	vidxf /= (VOLTAGE_NORMAL - VOLTAGE_MIN);
+	#ifdef FADING_HEAD
+	vidx = (int)lfloorf(vidxf);
+	#else
 	vidx = (int)lroundf(vidxf);
+	#endif
+
+	#ifdef FADING_HEAD
+	headbright  = ((voltage - VOLTAGE_MIN) * mididx);
+	headbright %= (VOLTAGE_MAX - VOLTAGE_MIN);
+	headbright *= bar_brightness;
+	headbright /= (VOLTAGE_MAX - VOLTAGE_MIN);
+	headbrighti = (int)lroundf(headbright);
+	#endif
 
 	for (i = 0; i < LED_STRIP_SIZE; i++)
 	{
@@ -107,6 +123,12 @@ void draw_voltage(float voltage, led_t* strip, uint8_t tick_brightness, uint8_t 
 		}
 		else if (i <= vidx)
 		{
+			#ifdef FADING_HEAD
+			if (i == vidx) {
+				set_color_rgb(&strip[i], 0, 0, headbrighti);
+			}
+			else
+			#endif
 			set_color_rgb(&strip[i], 0, 0, bar_brightness);
 		}
 		else
@@ -124,6 +146,10 @@ void draw_speedometer(double speed, led_t* strip, uint8_t tick_brightness, uint8
 	int32_t baridx;
 	int32_t backfade;
 	char over50 = speed > (double)SPEED_MID;
+	#ifdef FADING_HEAD
+	float headbright;
+	int32_t headbrighti;
+	#endif
 
 	tickidxes[0] = 0;
 	tickidxes[SPEED_TICKS - 1] = LED_STRIP_SIZE - 1;
@@ -134,9 +160,22 @@ void draw_speedometer(double speed, led_t* strip, uint8_t tick_brightness, uint8
 		tickidxes[i] = (int)lroundf(ticks_step * (float)i); 
 	}
 
-	spd *= 2 * LED_STRIP_SIZE;
-	spd /= SPEED_MAX;
+	spd *= LED_STRIP_SIZE;
+	spd /= SPEED_MID;
+	#ifndef FADING_HEAD
 	baridx = (int32_t)lround(spd);
+	#else
+	baridx = (int32_t)lfloorf(spd);
+	#endif
+
+	#ifdef FADING_HEAD
+	headbright  = (speed * LED_STRIP_SIZE);
+	headbright %= (SPEED_MID);
+	headbright *= bar_brightness;
+	headbright /= (SPEED_MID);
+	headbrighti = (int)lroundf(headbright);
+	#endif
+
 	if (baridx >= LED_STRIP_SIZE) {
 		baridx -= LED_STRIP_SIZE;
 	}
@@ -164,13 +203,29 @@ void draw_speedometer(double speed, led_t* strip, uint8_t tick_brightness, uint8
 		}
 		else if (i <= baridx)
 		{
-			if (over50 == 0)
+			#ifdef FADING_HEAD
+			if (i == baridx)
 			{
-				set_color_rgb(&strip[i], 0, bar_brightness, 0);
+				if (over50 == 0)
+				{
+					set_color_rgb(&strip[i], 0, headbrighti, 0);
+				}
+				else
+				{
+					set_color_rgb(&strip[i], headbrighti, 0, 0);
+				}
 			}
 			else
+			#endif
 			{
-				set_color_rgb(&strip[i], bar_brightness, 0, 0);
+				if (over50 == 0)
+				{
+					set_color_rgb(&strip[i], 0, bar_brightness, 0);
+				}
+				else
+				{
+					set_color_rgb(&strip[i], bar_brightness, 0, 0);
+				}
 			}
 		}
 		else
@@ -188,17 +243,32 @@ void draw_speedometer(double speed, led_t* strip, uint8_t tick_brightness, uint8
 
 	for (i = 0; i < SPEED_TICKS; i++)
 	{
-		if (baridx != tickidxes[i])
+		uint8_t tickidx = tickidxes[i];
+		if (baridx != tickidx)
 		{
-			set_color_rgb(&strip[tickidxes[i]], 0, 0, tick_brightness);
+			set_color_rgb(&strip[tickidx], 0, 0, tick_brightness);
 		}
-		else if (over50 == 0)
+		else
 		{
-			set_color_rgb(&strip[tickidxes[i]], tick_brightness, 0, 0);
-		}
-		else if (over50 != 0)
-		{
-			set_color_rgb(&strip[tickidxes[i]], tick_brightness, tick_brightness, 0);
+			#ifdef FADING_HEAD
+			if (over50 == 0)
+			{
+				set_color_rgb(&strip[tickidx], headbrighti, 0, tick_brightness);
+			}
+			else if (over50 != 0)
+			{
+				set_color_rgb(&strip[tickidx], headbrighti, tick_brightness, 0);
+			}
+			#else
+			if (over50 == 0)
+			{
+				set_color_rgb(&strip[tickidx], tick_brightness, 0, 0);
+			}
+			else if (over50 != 0)
+			{
+				set_color_rgb(&strip[tickidx], tick_brightness, tick_brightness, 0);
+			}
+			#endif
 		}
 	}
 }

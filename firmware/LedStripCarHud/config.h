@@ -1,7 +1,7 @@
 #ifndef _CONFIG_H_
 #define _CONFIG_H_
 
-#define LED_STRIP_SIZE 101
+#define LED_STRIP_SIZE 70
 
 #define RPM_MAX 10000
 #define RPM_REDLINE 8000
@@ -10,12 +10,12 @@
 #define RPM_DISPLAY_THRESH 1500
 #define PEDAL_REQUIRED 2
 
-#define SPEED_MID               50
-#define SPEED_MAX               100
-#define SPEED_DANGER            120
+#define SPEED_MID               100
+#define SPEED_MAX               200
+#define SPEED_DANGER            220
 #define SPEED_DANGER_HYSTERESIS 90
 #define SPEED_DISPLAY_THRESH    2
-#define SPEED_TICKS             6
+#define SPEED_TICKS             11
 #defube SPEED_BACKFADE          8
 
 #define VOLTAGE_MIN    10.0
