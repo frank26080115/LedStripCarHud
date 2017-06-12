@@ -16,7 +16,7 @@
 #define SPEED_DANGER_HYSTERESIS 90
 #define SPEED_DISPLAY_THRESH    2
 #define SPEED_TICKS             11
-#defube SPEED_BACKFADE          8
+#define SPEED_BACKFADE          8
 
 #define VOLTAGE_MIN    10.0
 #define VOLTAGE_NORMAL 12.0
@@ -24,7 +24,8 @@
 #define VOLTAGE_SCALE
 #define VOLTAGE_FILTER 0.02
 
-#define BRIGHTNESS_FILTER 0.02
+#define BRIGHTNESS_FILTER_CONST 0.02
+#define BRIGHTNESS_FILTER_SHIFT 8
 #define BRIGHTNESS_MIN 32
 #define BRIGHTNESS_MAX 255
 
@@ -37,7 +38,7 @@
 #define WARNING_SIZE 3
 
 #define VOLTMETER_TIME (60 * 5)
-#define CANBUS_TIMEOUT 2000
+#define CANBUS_TIMEOUT 200
 
 // data from Hyundai Santa Fe SE 2011
 // http://www.hyundaiproductinformation.com/vehicles/11_vehicles/11_santaFe/santaFe_featureslist_mech.asp
