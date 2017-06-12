@@ -1,4 +1,4 @@
-void draw_tachometer(int rpm, led_t* strip)
+void draw_tachometer(int rpm)
 {
 	int32_t howmuchred;
 	int32_t howmanyred, firstredidx;
@@ -47,30 +47,30 @@ void draw_tachometer(int rpm, led_t* strip)
 				#ifdef FADING_HEAD
 				if (i == rpmidx)
 				{
-					set_color_rgb(&strip[i], 0, headbright, 0);
+					strip_setColourRGB(i, DRAWRGB_GREEN(headbright));
 				}
 				#endif
 				{
-					set_color_rgb(&strip[i], 0, 255, 0);
+					strip_setColourRGB(i, DRAWRGB_GREEN(255));
 				}
 			}
 			else
 			{
-				set_color_rgb(&strip[i], 255, 0, 255);
+				strip_setColourRGB(i, DRAWRGB_PURPLE(255));
 			}
 		}
 		else if (i >= firstredidx)
 		{
-			set_color_rgb(&strip[i], howmuchred, 0, 0);
+			strip_setColourRGB(i, DRAWRGB_RED(howmuchred));
 		}
 		else
 		{
-			set_color_rgb(&strip[i], 0, 0, 0);
+			strip_setColourRGB(i, DRAWRGB_BLACK());
 		}
 	}
 }
 
-void draw_voltage(float voltage, led_t* strip, uint8_t tick_brightness, uint8_t bar_brightness)
+void draw_voltage(float voltage, uint8_t tick_brightness, uint8_t bar_brightness)
 {
 	int i;
 	int mididx;
@@ -111,34 +111,34 @@ void draw_voltage(float voltage, led_t* strip, uint8_t tick_brightness, uint8_t 
 	{
 		if (i == 0 && vidx == 0)
 		{
-			set_color_rgb(&strip[i], bar_brightness, 0, bar_brightness);
+			strip_setColourRGB(i, bar_brightness, 0, bar_brightness);
 		}
 		else if (i == mididx)
 		{
-			set_color_rgb(&strip[i], 0, tick_brightness, 0);
+			strip_setColourRGB(i, 0, tick_brightness, 0);
 		}
 		else if (isunder != 0 && (i == (mididx - 1) || i == (mididx + 1)))
 		{
-			set_color_rgb(&strip[i], 0, tick_brightness / 2, 0);
+			strip_setColourRGB(i, 0, tick_brightness / 2, 0);
 		}
 		else if (i <= vidx)
 		{
 			#ifdef FADING_HEAD
 			if (i == vidx) {
-				set_color_rgb(&strip[i], 0, 0, headbrighti);
+				strip_setColourRGB(i, DRAWRGB_BLUE(headbrighti));
 			}
 			else
 			#endif
-			set_color_rgb(&strip[i], 0, 0, bar_brightness);
+			strip_setColourRGB(i, DRAWRGB_BLUE(bar_brightness));
 		}
 		else
 		{
-			set_color_rgb(&strip[i], 0, 0, 0);
+			strip_setColourRGB(i, DRAWRGB_BLACK());
 		}
 	}
 }
 
-void draw_speedometer(double speed, led_t* strip, uint8_t tick_brightness, uint8_t bar_brightness)
+void draw_speedometer(double speed, uint8_t tick_brightness, uint8_t bar_brightness)
 {
 	int tickidxes[SPEED_TICKS];
 	int i;
@@ -153,7 +153,7 @@ void draw_speedometer(double speed, led_t* strip, uint8_t tick_brightness, uint8
 
 	tickidxes[0] = 0;
 	tickidxes[SPEED_TICKS - 1] = LED_STRIP_SIZE - 1;
-	float ticks_step = ticksidxes[SPEED_TICKS - 1];
+	float ticks_step = tickidxes[SPEED_TICKS - 1];
 	ticks_step /= (float)(SPEED_TICKS);
 	for (i = 1; i < (SPEED_TICKS - 1); i++)
 	{
@@ -199,7 +199,7 @@ void draw_speedometer(double speed, led_t* strip, uint8_t tick_brightness, uint8
 	{
 		if (i == 0 && speed < 0.5)
 		{
-			set_color_rgb(&strip[i], 0, 0, 0);
+			strip_setColourRGB(i, 0, 0, 0);
 		}
 		else if (i <= baridx)
 		{
@@ -208,11 +208,11 @@ void draw_speedometer(double speed, led_t* strip, uint8_t tick_brightness, uint8
 			{
 				if (over50 == 0)
 				{
-					set_color_rgb(&strip[i], 0, headbrighti, 0);
+					strip_setColourRGB(i, DRAWRGB_YELLOW(headbrighti));
 				}
 				else
 				{
-					set_color_rgb(&strip[i], headbrighti, 0, 0);
+					strip_setColourRGB(i, DRAWRGB_RED(headbrighti));
 				}
 			}
 			else
@@ -220,11 +220,11 @@ void draw_speedometer(double speed, led_t* strip, uint8_t tick_brightness, uint8
 			{
 				if (over50 == 0)
 				{
-					set_color_rgb(&strip[i], 0, bar_brightness, 0);
+					strip_setColourRGB(i, DRAWRGB_YELLOW(bar_brightness));
 				}
 				else
 				{
-					set_color_rgb(&strip[i], bar_brightness, 0, 0);
+					strip_setColourRGB(i, DRAWRGB_RED(bar_brightness));
 				}
 			}
 		}
@@ -232,11 +232,11 @@ void draw_speedometer(double speed, led_t* strip, uint8_t tick_brightness, uint8
 		{
 			if (over50 == 0)
 			{
-				set_color_rgb(&strip[i], 0, 0, 0);
+				strip_setColourRGB(i, DRAWRGB_BLACK());
 			}
 			else
 			{
-				set_color_rgb(&strip[i], 0, backfade, 0);
+				strip_setColourRGB(i, DRAWRGB_YELLOW(backfade));
 			}
 		}
 	}
@@ -246,34 +246,20 @@ void draw_speedometer(double speed, led_t* strip, uint8_t tick_brightness, uint8
 		uint8_t tickidx = tickidxes[i];
 		if (baridx != tickidx)
 		{
-			set_color_rgb(&strip[tickidx], 0, 0, tick_brightness);
+			strip_setColourRGB(tickidx, DRAWRGB_BLUE(tick_brightness));
 		}
 		else
 		{
 			#ifdef FADING_HEAD
-			if (over50 == 0)
-			{
-				set_color_rgb(&strip[tickidx], headbrighti, 0, tick_brightness);
-			}
-			else if (over50 != 0)
-			{
-				set_color_rgb(&strip[tickidx], headbrighti, tick_brightness, 0);
-			}
+			strip_setColourRGB(tickidx, headbrighti, 0, tick_brightness);
 			#else
-			if (over50 == 0)
-			{
-				set_color_rgb(&strip[tickidx], tick_brightness, 0, 0);
-			}
-			else if (over50 != 0)
-			{
-				set_color_rgb(&strip[tickidx], tick_brightness, tick_brightness, 0);
-			}
+			strip_setColourRGB(tickidx, 255, 0, tick_brightness);
 			#endif
 		}
 	}
 }
 
-char draw_intro(int step, int size, led_t* strip)
+char draw_intro(int step, int size)
 {
 	char didsomething = 0;
 	int i, j, s, stage;
@@ -301,22 +287,22 @@ char draw_intro(int step, int size, led_t* strip)
 	}
 
 	for (i = 0; i < LED_STRIP_SIZE; i++) {
-		set_color_rgb(&strip[i], 0, 0, 0);
+		strip_setColourRGB(i, DRAWRGB_BLACK());
 	}
 	for (i = mididx1 - step, j = 0; i >= 0 && j < s; i--, j++)
 	{
-		set_color_rgb(&strip[i], 255, 255, 255);
+		strip_setColourRGB(i, DRAWRGB_WHITE(255));
 		didsomething = 1;
 	}
 	for (i = mididx2 + step, j = 0; i < LED_STRIP_SIZE && j < s; i++, j++)
 	{
-		set_color_rgb(&strip[i], 255, 255, 255);
+		strip_setColourRGB(i, DRAWRGB_WHITE(255));
 		didsomething = 1;
 	}
 	return didsomething;
 }
 
-void draw_voltageWarning(led_t* strip, uint32_t time, int mph)
+void draw_voltageWarning(uint32_t time, int mph)
 {
 	uint8_t b;
 	int i, j;
@@ -329,6 +315,6 @@ void draw_voltageWarning(led_t* strip, uint32_t time, int mph)
 	for (i = 0; i < WARNING_SIZE; i++)
 	{
 		j = mph < SPEED_MID ? i : (LED_STRIP_SIZE - 1 - i); // pick which end of the strip to blink
-		set_color_rgb(&strip[j], b, 0, 0);
+		strip_setColourRGB(j, DRAWRGB_RED(b));
 	}
 }
