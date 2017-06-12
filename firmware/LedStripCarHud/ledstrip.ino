@@ -27,7 +27,7 @@ void strip_show(void)
 	{
 		led_t* ptr = &led_strip[i];
 		#if defined(_ADAFRUIT_DOT_STAR_H_)
-		strip->setPixelColor(led_adjustChan(ptr->r, global_brightness), led_adjustChan(ptr->g, global_brightness), led_adjustChan(ptr->b, global_brightness));
+		strip->setPixelColor(i, led_adjustChan(ptr->r, global_brightness), led_adjustChan(ptr->g, global_brightness), led_adjustChan(ptr->b, global_brightness));
 		#elif defined(FASTLED_VERSION)
 		CRGB* dot = &strip_array[i];
 		dot->r = led_adjustChan(ptr->r, global_brightness);

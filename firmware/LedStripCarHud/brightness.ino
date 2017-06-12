@@ -1,11 +1,11 @@
 uint8_t get_brightness(void)
 {
 	static double filter = BRIGHTNESS_MIN;
-	static int32_t chase = BRIGHTNESS_MIN << BRIGHTNESS_FILTER_SHIFT
+	static int32_t chase = BRIGHTNESS_MIN << BRIGHTNESS_FILTER_SHIFT;
 
 	int32_t r, c;
 	double x;
-	uint16_t sun;
+	uint16_t sun, pot_1, pot_2;
 	uint16_t pot_min, pot_max;
 
 	sun   = (uint16_t)analogRead(PIN_SUN);
