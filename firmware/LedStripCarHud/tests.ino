@@ -1,5 +1,6 @@
 void tests(void)
 {
+	Serial.begin(9600); // USB port will ignore baud parameter
 	test_usb();
 	test_heartbeat();
 	test_analog();
@@ -21,7 +22,6 @@ void test_heartbeat(void)
 
 void test_usb(void)
 {
-	Serial.begin(9600); // USB port will ignore baud parameter
 	while (1)
 	{
 		Serial.printf("Hello World\n");
@@ -59,7 +59,7 @@ void test_analog(void)
 
 void test_strip(void)
 {
-	uint16_t i;
+	uint16_t i, j = 0;
 	strip_init();
 	while (1)
 	{
@@ -70,15 +70,18 @@ void test_strip(void)
 		strip_setBrightness(255);
 		strip_show();
 		delay(500);
-		strip_setColourRGB(0, 255, 255, 255);
-		strip_setColourRGB(1, 255, 0, 0);
-		strip_setColourRGB(2, 0, 255, 0);
-		strip_setColourRGB(3, 0, 0, 255);
+		strip_setColourRGB(j + 0, 255, 255, 255);
+		strip_setColourRGB(j + 1, 255, 0, 0);
+		strip_setColourRGB(j + 2, 0, 255, 0);
+		strip_setColourRGB(j + 3, 0, 0, 255);
+		strip_setColourRGB(j + 4, 255, 255, 255);
 		strip_show();
 		delay(500);
 		strip_setBrightness(128);
 		strip_show();
 		delay(500);
+		j += 1;
+		j %= LED_STRIP_SIZE - 5;
 	}
 }
 
@@ -90,7 +93,7 @@ void test_canbus(void)
 	while (1)
 	{
 		int kmh, rpm, pedal;
-		if (canbus_read(&kmh, &rpm, &pedal) != 0)
+		if (canbus_readAll(&kmh, &rpm, &pedal) != 0)
 		{
 			Serial.printf("kmh=, %d , rpm=, %d , pedal=, %d , \n", kmh, rpm, pedal);
 		}
