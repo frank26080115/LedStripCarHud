@@ -1,9 +1,9 @@
 void tests(void)
 {
 	Serial.begin(9600); // USB port will ignore baud parameter
-	test_usb();
-	test_heartbeat();
-	test_analog();
+	//test_usb();
+	//test_heartbeat();
+	//test_analog();
 	test_strip();
 	test_canbus();
 }
@@ -22,12 +22,15 @@ void test_heartbeat(void)
 
 void test_usb(void)
 {
+	pinMode(PIN_HEARTBEAT, OUTPUT);
 	while (1)
 	{
 		Serial.printf("Hello World\n");
+		digitalWrite(PIN_HEARTBEAT, HIGH);
 		delay(1000);
 		Serial.printf("Hello World\n");
 		Serial.send_now();
+		digitalWrite(PIN_HEARTBEAT, LOW);
 		delay(1000);
 	}
 }
@@ -45,15 +48,15 @@ void test_analog(void)
 
 	while (1)
 	{
-		Serial.printf("\n\tv=, %d , ", analogRead(PIN_VOLTAGE));
-		Serial.printf("\tsun=, %d , ", analogRead(PIN_SUN));
-		Serial.printf("\tpot1=, %d , ", analogRead(PIN_POT_1));
-		Serial.printf("\tpot2=, %d , ", analogRead(PIN_POT_2));
-		Serial.printf("\tpot3=, %d , ", analogRead(PIN_POT_3));
-		Serial.printf("\tpot4=, %d , ", analogRead(PIN_POT_4));
-		Serial.printf("\tpot5=, %d , ", analogRead(PIN_POT_5));
-		Serial.printf("\tpot6=, %d , ", analogRead(PIN_POT_6));
-		delay(500);
+		Serial.printf("\nv=, %d , ",  analogRead(PIN_VOLTAGE));
+		Serial.printf("sun=, %d , ",  analogRead(PIN_SUN));
+		Serial.printf("pot1=, %d , ", analogRead(PIN_POT_1));
+		Serial.printf("pot2=, %d , ", analogRead(PIN_POT_2));
+		Serial.printf("pot3=, %d , ", analogRead(PIN_POT_3));
+		Serial.printf("pot4=, %d , ", analogRead(PIN_POT_4));
+		Serial.printf("pot5=, %d , ", analogRead(PIN_POT_5));
+		Serial.printf("pot6=, %d , ", analogRead(PIN_POT_6));
+		delay(200);
 	}
 }
 
