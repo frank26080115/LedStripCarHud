@@ -101,8 +101,8 @@ double map_pots(uint16_t x, uint16_t lower, uint16_t higher, uint16_t range_min,
 	span_in = higher - lower;
 	span_out = range_max - range_min;
 	xd = x - lower;
-	xd *= span_in;
-	xd /= span_out;
+	xd *= span_out;
+	xd /= span_in;
 	xd += range_min;
 
 	return xd;
