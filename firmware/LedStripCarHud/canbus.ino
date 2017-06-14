@@ -4,17 +4,25 @@ bool canbus_readAll(int* kmh, int* rpm, int* pedal)
 	uint8_t tmp[2];
 	int res;
 
-	success &= canbus_readOne(ECUPID_SPEED, tmp);
-	res = tmp[0];
-	*kmh = res;
+	if (kmh != NULL)
+	{
+		success &= canbus_readOne(ECUPID_SPEED, tmp);
+		res = tmp[0];
+		*kmh = res;
+	}
 
 	success &= canbus_readOne(ECUPID_ENGINE_RPM, tmp);
 	res = ((tmp[0]*256) + tmp[1])/4;
-	*rpm = res;
+	if (rpm != NULL) {
+		*rpm = res;
+	}
 
-	success &= canbus_readOne(ECUPID_PEDAL, tmp);
-	res = tmp[0];
-	*pedal = res; // ranged 0 to 255, 255 means 100%
+	if (pedal != NULL)
+	{
+		success &= canbus_readOne(ECUPID_PEDAL, tmp);
+		res = tmp[0];
+		*pedal = res; // ranged 0 to 255, 255 means 100%
+	}
 
 	return success;
 }
@@ -36,8 +44,11 @@ bool canbus_readOne(uint8_t pid, uint8_t* result)
 			{
 				if (rxmsg.buf[2] == pid)
 				{
-					result[0] = rxmsg.buf[3];
-					result[1] = rxmsg.buf[4];
+					if (result != NULL)
+					{
+						result[0] = rxmsg.buf[3];
+						result[1] = rxmsg.buf[4];
+					}
 					success = 1;
 				}
 			}
