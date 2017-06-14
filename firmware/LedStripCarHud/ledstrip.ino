@@ -10,6 +10,8 @@ CRGB strip_array[LED_STRIP_SIZE];
 uint8_t global_brightness;
 led_t led_strip[LED_STRIP_SIZE];
 
+#define DEBUG_STRIP
+
 void strip_init(void)
 {
 	#if defined(_ADAFRUIT_DOT_STAR_H_)
@@ -24,7 +26,7 @@ void strip_show(void)
 {
 	uint16_t i;
 	#ifdef DEBUG_STRIP
-	dbg_printf("=LEDs=[", dbgc);
+	dbg_printf("=LEDs=[");
 	#endif
 	for (i = 0; i < LED_STRIP_SIZE; i++)
 	{
