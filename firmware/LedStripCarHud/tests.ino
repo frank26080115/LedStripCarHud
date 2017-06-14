@@ -4,9 +4,9 @@ void tests(void)
 	//test_usb();
 	//test_heartbeat();
 	//test_analog();
-	test_strip();
+	//test_strip();
 	test_canbus();
-	test_sleep();
+	//test_sleep();
 }
 
 void test_heartbeat(void)
@@ -91,17 +91,25 @@ void test_strip(void)
 
 void test_canbus(void)
 {
+	/*
 	while(canbus_scan() == 0)
 	{
+		Serial.printf("Voltage=%2.2f\n", get_voltage());
 	}
+	//*/
+	canbus_init();
 	while (1)
 	{
 		int kmh, rpm, pedal;
 		if (canbus_readAll(&kmh, &rpm, &pedal) != 0)
 		{
-			Serial.printf("kmh=, %d , rpm=, %d , pedal=, %d , \n", kmh, rpm, pedal);
+			Serial.printf("kmh=, %d , rpm=, %d , pedal=, %d , voltage=, %2.2f ,\n", kmh, rpm, pedal, get_voltage());
 		}
-		delay(500);
+		else
+		{
+			Serial.printf("read failed\n");
+		}
+		//delay(500); // delay not required because the blocking nature of the readAll function
 	}
 	
 }
@@ -109,6 +117,7 @@ void test_canbus(void)
 void test_sleep(void)
 {
 	uint8_t i;
+	pinMode(PIN_HEARTBEAT, OUTPUT);
 	while (1)
 	{
 		sleep();

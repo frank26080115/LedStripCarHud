@@ -3,6 +3,8 @@
 
 #define LED_STRIP_SIZE 70
 
+#define CANBUS_DEFAULT_BAUD 500000
+
 #define RPM_MAX 10000
 #define RPM_REDLINE 8000
 #define RPM_IDLE 500
@@ -40,7 +42,7 @@
 #define WARNING_SIZE 3
 
 #define VOLTMETER_TIME (60 * 5)
-#define CANBUS_TIMEOUT 200
+#define CANBUS_TIMEOUT 300
 
 #define WAKEUP_INTERVAL 5000
 
