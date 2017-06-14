@@ -173,8 +173,15 @@ void loop()
 
 void wipe_out(void)
 {
-}
-
-void sleep(void)
-{
+	uint8_t i;
+	for (i = 0; i < LED_STRIP_SIZE, i++)
+	{
+		uint8_t j;
+		for (j = 0; j < i; j++)
+		{
+			strip_setColourRGB(j, DRAWRGB_BLACK());
+		}
+		strip_show();
+		delay(100);
+	}
 }
