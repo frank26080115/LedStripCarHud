@@ -6,6 +6,7 @@ void tests(void)
 	//test_analog();
 	test_strip();
 	test_canbus();
+	test_sleep();
 }
 
 void test_heartbeat(void)
@@ -103,4 +104,20 @@ void test_canbus(void)
 		delay(500);
 	}
 	
+}
+
+void test_sleep(void)
+{
+	uint8_t i;
+	while (1)
+	{
+		sleep();
+		for (i = 0; i < 6; i++)
+		{
+			digitalWrite(PIN_HEARTBEAT, HIGH);
+			delay(150);
+			digitalWrite(PIN_HEARTBEAT, LOW);
+			delay(150);
+		}
+	}
 }

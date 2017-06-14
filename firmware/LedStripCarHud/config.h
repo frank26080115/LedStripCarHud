@@ -42,6 +42,8 @@
 #define VOLTMETER_TIME (60 * 5)
 #define CANBUS_TIMEOUT 200
 
+#define WAKEUP_INTERVAL 5000
+
 // data from Hyundai Santa Fe SE 2011
 // http://www.hyundaiproductinformation.com/vehicles/11_vehicles/11_santaFe/santaFe_featureslist_mech.asp
 // gear ratios are 4.651 2.831 1.842 1.386 1.000 0.772 3.393
