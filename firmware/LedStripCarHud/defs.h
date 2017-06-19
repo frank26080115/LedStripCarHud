@@ -35,6 +35,15 @@ led_t;
 #define DRAWRGB_PURPLE(x) (x), 0, (x)
 #define DRAWRGB_BLACK()   0, 0, 0
 
+enum
+{
+	SHOWDIAL_NONE,
+	SHOWDIAL_VOLTAGE,
+	SHOWDIAL_RPM,
+	SHOWDIAL_SPEED,
+	SHOWDIAL_MAYBE_SPEED,
+};
+
 #define dbg_printf Serial.printf
 
 #endif
