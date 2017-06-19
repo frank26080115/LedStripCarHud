@@ -5,18 +5,20 @@ SnoozeBlock slpconfig(slptimer);
 
 void sleep(void)
 {
-	int rpm;
+	// wipe_out(-1);
+	strip_blank();
+	strip_show();
 	while (1)
 	{
 		digitalWrite(PIN_HEARTBEAT, LOW);
 		slptimer.setTimer(WAKEUP_INTERVAL);
+		CANn.end();
 		Snooze.hibernate(slpconfig);
 
+		canbus_init();
 		digitalWrite(PIN_HEARTBEAT, HIGH);
-		if (canbus_readAll(NULL, &rpm, NULL)) {
-			if (rpm > RPM_ENGINE_ON) {
+		if (canbus_simpleCheck()) {
 				break;
 			}
 		}
-	}
 }
