@@ -795,7 +795,7 @@ void snow_out(void)
 		uint8_t i;
 		// check if there is any LEDs still lit
 		for (i = 0; i < LED_STRIP_SIZE && has == false; i++) {
-			if (strip_getColourAny(rnd) > 0) {
+			if (strip_getColourAny(i) > 0) {
 				has = true;
 			}
 		}
