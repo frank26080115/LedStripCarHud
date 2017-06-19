@@ -41,7 +41,6 @@ void loop()
 	static signed int kmh, rpm, pedal, gear;
 	static double mph;
 	double voltage;
-	static bool highspeed = false;
 	static uint8_t prev_dial = SHOWDIAL_NONE;
 	uint8_t dial = prev_dial;
 	static bool dbg_latched = false;
@@ -73,7 +72,7 @@ void loop()
 	if (((now / 500) % 2) == 0) {
 		if (dbg_latched == false) {
 			dbg_printf("%ul, %d, %d, %3.1f, %d, %d, %d, %2.1f, \r\n", now, rpm, kmh, mph, pedal, gear, brightness, voltage);
-	}
+		}
 		dbg_latched = true;
 		digitalWrite(PIN_HEARTBEAT, HIGH);
 	}
@@ -101,7 +100,7 @@ void loop()
 	}
 
 	if (prev_ecu_on == false && ecu_is_on != false
-	&& rpm == 0 && kmh == 0
+		&& rpm == 0 && kmh == 0
 	)
 	{
 		int animation_active;
@@ -118,21 +117,21 @@ void loop()
 			strip_show();
 			if (animation_active > 0) {
 				delay_ms(20);
-		}
+			}
 			animation_steps++;
-	}
+		}
 		while (animation_active != false);
 		dial = SHOWDIAL_NONE;
 		strip_blank();
 		strip_show();
 		dbg_printf("done\r\n");
-		}
+	}
 	else if (ecu_is_on == false && prev_ecu_on != false)
-		{
+	{
 		dbg_printf("ECU is not on, sleeping\r\n");
 		wipe_out(-1);
 		digitalWrite(PIN_HEARTBEAT, LOW);
-			sleep();
+		sleep();
 		dial = SHOWDIAL_NONE;
 	}
 
@@ -141,19 +140,20 @@ void loop()
 
 	if (canbus_good != false) // only make decisions based on valid data
 	{
-		if (dial == SHOWDIAL_MAYBE_SPEED) {
+		if (dial == SHOWDIAL_MAYBE_SPEED)
+		{
 			if ((now - step_timer) > 2000) {
 				dial = SHOWDIAL_RPM;
 				dbg_printf("REVVVV\r\n");
 			}
-	}
+		}
 
 		if (kmh > 0) // is moving
 		{
 			dial = SHOWDIAL_SPEED;
 		}
 		else if (kmh <= 0 && rpm >= RPM_DISPLAY_THRESH && pedal >= PEDAL_REQUIRED)
-	{
+		{
 			/*
 			the tachometer display is more of a demo
 			but we want to avoid showing the tachometer when we are simply
@@ -169,31 +169,12 @@ void loop()
 		}
 		else if (kmh <= 0 && rpm < RPM_ENGINE_ON) {
 			dial = SHOWDIAL_VOLTAGE;
-	}
+		}
 		else if (dial == SHOWDIAL_NONE) {
 			dbg_printf("odd... nothing shown\r\n");
 			dial = SHOWDIAL_SPEED;
 		}
-
-		if (kmh == 0)
-	{
-			if (highspeed != false) {
-				wipe_out(-1);
-				draw_speed_fadein(-1);
-				dbg_printf("stopped, switching to low speed mode\r\n");
 	}
-			highspeed = false;
-		}
-		else if (mph >= 80)
-	{
-			if (highspeed == false)
-		{
-				dbg_printf("slow down!!!\r\n");
-				highspeed = true;
-				draw_speed_warning();
-			}
-		}
-		}
 
 	/*
 	here we determine and show various transition animations
@@ -232,7 +213,7 @@ void loop()
 	// show the correct dial
 	if (dial == SHOWDIAL_VOLTAGE)
 	{
-		draw_voltage(voltage, 0xFF, 0xFF);
+		draw_voltage(voltage, TICK_BRIGHTNESS, BAR_BRIGHTNESS);
 	}
 	else if (dial == SHOWDIAL_RPM)
 	{
@@ -240,7 +221,7 @@ void loop()
 	}
 	else if (dial == SHOWDIAL_SPEED || dial == SHOWDIAL_MAYBE_SPEED)
 	{
-		draw_speedometer(mph, highspeed, 0xFF, 0xFF);
+		draw_speedometer(mph, TICK_BRIGHTNESS, BAR_BRIGHTNESS);
 	}
 
 	if (voltage < 6) { // it says 6 here but in reality

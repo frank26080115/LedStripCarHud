@@ -212,20 +212,12 @@ void test_speedometer(void)
 		if (spd < 0)
 		{
 			spd = 0;
-	}
+		}
 		draw_speed_fadein(-1);
 		t = millis();
 		while ((millis() - t) < 1000)
 		{
-			draw_speedometer(spd, false, 0xFF, 0xFF);
-			strip_show();
-			get_voltage();
-		}
-		draw_speed_warning();
-		t = millis();
-		while ((millis() - t) < 1000)
-		{
-			draw_speedometer(spd, true, 0xFF, 0xFF);
+			draw_speedometer(spd, 0xFF, 0xFF);
 			strip_show();
 			get_voltage();
 		}
@@ -363,25 +355,25 @@ void test_dials(void)
 		draw_speed_fadein(-1);
 		for (i = 0.0; i <= 80; i += 0.5)
 		{
-			draw_speedometer(i, false, 0xFF, 0xFF);
+			draw_speedometer(i, 0xFF, 0xFF);
 			strip_show();
 			delay_ms(8000 / 160);
 		}
 		for (i = 80.0; i >= 0; i -= 0.5)
 		{
-			draw_speedometer(i, false, 0xFF, 0xFF);
+			draw_speedometer(i, 0xFF, 0xFF);
 			strip_show();
 			delay_ms(8000 / 160);
 		}
 		for (i = 0.0; i <= 120; i += 1)
 		{
-			draw_speedometer(i, true, 0xFF, 0xFF);
+			draw_speedometer(i, 0xFF, 0xFF);
 			strip_show();
 			delay_ms(8000 / 240);
 		}
 		for (i = 120.0; i >= 0; i -= 1)
 		{
-			draw_speedometer(i, true, 0xFF, 0xFF);
+			draw_speedometer(i, 0xFF, 0xFF);
 			strip_show();
 			delay_ms(8000 / 240);
 		}

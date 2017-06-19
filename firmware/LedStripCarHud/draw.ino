@@ -170,7 +170,7 @@ void draw_voltage(float voltage, uint8_t tick_brightness, uint8_t bar_brightness
 	}
 }
 
-void draw_speedometer(double speed, bool highspeed, uint8_t tick_brightness, uint8_t bar_brightness)
+void draw_speedometer(double speed, uint8_t tick_brightness, uint8_t bar_brightness)
 {
 	int8_t tickspace;
 	int i;
@@ -180,24 +180,36 @@ void draw_speedometer(double speed, bool highspeed, uint8_t tick_brightness, uin
 	float headbright;
 	int32_t headbrighti;
 	#endif
+	int trailsize;
 
-	tickspace = (highspeed == false) ? SPEED_TICKSPACING_SLOW : SPEED_TICKSPACING_FAST;
+	tickspace = SPEED_TICKSPACING_SLOW;
+	trailsize += (int)lround(speed - 80.0);
+	if (trailsize < 3) {
+		trailsize = 3;
+	}
 
 	spd *= LED_STRIP_SIZE;
-	spd /= (highspeed == false) ? 80 : 120;
+	spd /= 80;
 	#ifndef FADING_HEAD
 	baridx = (int32_t)lround(spd);
 	#else
 	baridx = (int32_t)floor(spd);
 	#endif
 
+	// for better UX
+	baridx += 1;
+
 	#ifdef FADING_HEAD
 	headbright  = (speed * LED_STRIP_SIZE);
-	headbright  = fmodf(headbright, (highspeed == false) ? 80 : 120);
+	headbright  = fmodf(headbright, 80.0);
 	headbright *= bar_brightness;
-	headbright /= (highspeed == false) ? 80 : 120;
+	headbright /= 80.0;
 	headbrighti = (int)lroundf(headbright);
 	#endif
+
+	if (baridx >= (LED_STRIP_SIZE - 1)) {
+		baridx = (LED_STRIP_SIZE - 1);
+	}
 
 	for (i = 0; i < LED_STRIP_SIZE; i++)
 	{
@@ -206,14 +218,14 @@ void draw_speedometer(double speed, bool highspeed, uint8_t tick_brightness, uin
 		{
 			strip_setColourRGB(i, DRAWRGB_BLACK()); // this will be overwritten by the first tick
 		}
-		else if (i <= baridx && i >= (baridx - 3))
+		else if (i <= baridx && i >= (baridx - trailsize))
 		{
 			#ifdef FADING_HEAD
 			if (i == baridx)
 			{
 				strip_setColourRGB(i, DRAWRGB_ORANGE(headbrighti));
 			}
-			else if (i == (baridx - 3))
+			else if (i == (baridx - trailsize))
 				{
 				strip_setColourRGB(i, DRAWRGB_ORANGE(bar_brightness - headbrighti));
 				}
@@ -228,45 +240,30 @@ void draw_speedometer(double speed, bool highspeed, uint8_t tick_brightness, uin
 			strip_setColourRGB(i, DRAWRGB_BLACK());
 		}
 		if ((i % tickspace) == 0)
-				{
-			uint8_t tb = tick_brightness;
-			if (highspeed != false && (i % (tickspace * 2)) != 0) {
-				tb /= BRIGHTNESS_MIN * 2;
-				}
+		{
 			if (baridx != i)
-				{
+			{
 				if (i < baridx)
 				{
-					if (highspeed == false)
-					{
-						if (i == 0) {
-							strip_setColourRGB(i, DRAWRGB_BLUE(tb));
-				}
-						else if ((i / tickspace) <= 4) {
-							strip_setColourRGB(i, DRAWRGB_RED(tb));
-			}
-						else {
-							strip_setColourRGB(i, DRAWRGB_PURPLE(tb));
-		}
+					if (i == 0) {
+						strip_setColourRGB(i, DRAWRGB_BLUE(tick_brightness));
 					}
-					else if (highspeed != false)
-					{
-						if (i == 0) {
-							strip_setColourRGB(i, DRAWRGB_BLUE(tb));
-						}
-						else if ((i / tickspace) <= 6) {
-							strip_setColourRGB(i, DRAWRGB_RED(tb));
-						}
-						else {
-							strip_setColourRGB(i, DRAWRGB_PURPLE(tb));
-						}
+					else if ((i / tickspace) <= 4) {
+						strip_setColourRGB(i, DRAWRGB_RED(tick_brightness));
+					}
+					else {
+						strip_setColourRGB(i, DRAWRGB_PURPLE(tick_brightness));
 					}
 				}
 				else {
-					strip_setColourRGB(i, DRAWRGB_BLUE(tb));
+					strip_setColourRGB(i, DRAWRGB_BLUE(tick_brightness));
 				}
 			}
 		}
+	}
+
+	if (strip_getColourAny(0) <= 0) {
+		strip_setColourRGB(0, DRAWRGB_BLUE(tick_brightness));
 	}
 }
 
@@ -681,20 +678,6 @@ void draw_speed_fadein_random(uint8_t b)
 				alllit = false;
 			}
 		}
-	}
-}
-
-void draw_speed_warning(void)
-{
-	uint8_t i;
-	for (i = 0; i < 3; i++)
-	{
-		strip_show();
-		delay_ms(150);
-		strip_fill(DRAWRGB_RED(0xFF));
-		strip_show();
-		delay_ms(150);
-		strip_blank();
 	}
 }
 
