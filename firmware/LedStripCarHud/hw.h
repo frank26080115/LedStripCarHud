@@ -28,4 +28,6 @@
 
 #define CANn Can0
 
+#define LED_STRIP_SIZE_VIRTUAL 144
+
 #endif

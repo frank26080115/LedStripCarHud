@@ -1,5 +1,4 @@
-#include <Adafruit_DotStar.h>
-//#include <FastLED.h>
+#include <FastLED.h>
 #include <FlexCAN.h>
 
 #include "hw.h"
