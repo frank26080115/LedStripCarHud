@@ -302,19 +302,128 @@ char draw_intro(int step, int size)
 	return didsomething;
 }
 
-void draw_voltageWarning(uint32_t time, int mph)
+void wipe_out(int8_t r)
 {
-	uint8_t b;
-	int i, j;
+	uint32_t ani;
+	int16_t i, j, b;
+	if (r < 0) {
+		ani = random() % 6; // chose animation randomly
+	}
+	else {
+		ani = r; // selected animation
+	}
 
-	// setup a blink every half second
-	time /= 500;
-	time %= 2;
-	b = time == 0 ? 255 : 0;
+	b = strip_getBrightness(); // cache for restoring later
 
-	for (i = 0; i < WARNING_SIZE; i++)
+	switch (ani)
 	{
-		j = mph < SPEED_MID ? i : (LED_STRIP_SIZE - 1 - i); // pick which end of the strip to blink
-		strip_setColourRGB(j, DRAWRGB_RED(b));
+		case 0: // left to right wipe
+			for (i = 0; i < LED_STRIP_SIZE; i++)
+			{
+				for (j = 0; j < i; j++)
+				{
+					strip_setColourRGB(j, DRAWRGB_BLACK());
+				}
+				strip_show();
+				delay_ms(WIPEOUT_TIME / LED_STRIP_SIZE);
+			}
+			break;
+		case 1: // right to left wipe
+			for (i = LED_STRIP_SIZE - 1; i >= 0; i--)
+			{
+				for (j = LED_STRIP_SIZE - 1; j >= i; j--)
+				{
+					strip_setColourRGB(j, DRAWRGB_BLACK());
+				}
+				strip_show();
+				delay_ms(WIPEOUT_TIME / LED_STRIP_SIZE);
+			}
+		case 2: // center to outwards wipe
+			for (i = LED_STRIP_SIZE / 2, j = LED_STRIP_SIZE / 2; i >= 0 || j < LED_STRIP_SIZE; i--, j++)
+			{
+				if (i >= 0)
+				{
+					strip_setColourRGB(i, DRAWRGB_BLACK());
+				}
+				if (j < LED_STRIP_SIZE)
+				{
+					strip_setColourRGB(j, DRAWRGB_BLACK());
+				}
+				strip_show();
+				delay_ms(WIPEOUT_TIME / LED_STRIP_SIZE / 2);
+			}
+			break;
+		case 3: // outside to center wipe
+			for (i = 0, j = LED_STRIP_SIZE - 1; i < LED_STRIP_SIZE || j >= 0; i++, j--)
+			{
+				if (j >= 0)
+				{
+					strip_setColourRGB(j, DRAWRGB_BLACK());
+				}
+				if (i < LED_STRIP_SIZE)
+				{
+					strip_setColourRGB(i, DRAWRGB_BLACK());
+				}
+				strip_show();
+				delay_ms(WIPEOUT_TIME / LED_STRIP_SIZE / 2);
+			}
+			break;
+		case 4:
+			snow_out();
+			break;
+		default: // brightness dim
+			for (i = b; i >= 0; i--)
+			{
+				strip_setBrightness(i);
+				strip_show();
+				delay_ms(1000 / b);
+			}
+			break;
+	}
+
+	strip_blank();
+	strip_show();
+
+	strip_setBrightness(b); // restore brightness setting because likely another animation follows
+}
+
+void snow_out(void)
+{
+	uint32_t start = millis();
+	int32_t tdiff;
+	bool did = true;
+	while (did != false)
+	{
+		bool found = false;
+		bool has = false;
+		uint8_t i;
+		for (i = 0; i < LED_STRIP_SIZE && has == false; i++) {
+			if (strip_getColourR(i) > 0 || strip_getColourG(i) > 0 || strip_getColourB(i) > 0) {
+				has = true;
+			}
+		}
+		if (has != false)
+		{
+			while (found == false)
+			{
+				uint32_t rnd = random() % LED_STRIP_SIZE;
+				if (strip_getColourR(rnd) > 0 || strip_getColourG(rnd) > 0 || strip_getColourB(rnd) > 0) {
+					found = true;
+					did = true;
+					strip_setColourRGB(rnd, DRAWRGB_BLACK());
+					strip_show();
+					tdiff = 1200 - (millis() - start);
+					if (tdiff < 0) {
+						tdiff = 0;
+					}
+					tdiff /= LED_STRIP_SIZE;
+					delay_ms(10 + tdiff);
+				}
+			}
+		}
+		else
+		{
+			did = false;
+		}
 	}
 }
