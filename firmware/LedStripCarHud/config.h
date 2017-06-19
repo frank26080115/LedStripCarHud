@@ -1,21 +1,19 @@
 #ifndef _CONFIG_H_
 #define _CONFIG_H_
 
-#define LED_STRIP_SIZE 70
+#define LED_STRIP_SIZE 49
 
 #define CANBUS_DEFAULT_BAUD 500000
 
-#define RPM_MAX 10000
-#define RPM_REDLINE 8000
+#define FADING_HEAD
+
+#define RPM_MAX 8000
+#define RPM_REDLINE 6500
 #define RPM_IDLE 500
 #define RPM_ENGINE_ON 50
-#define RPM_DISPLAY_THRESH 1500
-#define PEDAL_REQUIRED 2
+#define RPM_DISPLAY_THRESH 800
+#define PEDAL_REQUIRED 5
 
-#define SPEED_MID               100
-#define SPEED_MAX               200
-#define SPEED_DANGER            220
-#define SPEED_DANGER_HYSTERESIS 90
 #define SPEED_DISPLAY_THRESH    2
 #define SPEED_TICKS             11
 #define SPEED_BACKFADE          8
@@ -27,12 +25,14 @@
 #define VOLTAGE_FILTER 0.02
 
 #define BRIGHTNESS_FILTER_CONST 0.02
-#define BRIGHTNESS_FILTER_SHIFT 8
-#define BRIGHTNESS_MIN 32
-#define BRIGHTNESS_MAX 255
+#define BRIGHTNESS_FILTER_SHIFT 7
+#define BRIGHTNESS_MIN 16
+#define BRIGHTNESS_MAX 255 // (255 - 32) / 4
 
-#define TICK_BRIGHTNESS 200
-#define BAR_BRIGHTNESS 200
+#define ANALOG_FILTER_CONST 0.02
+
+#define TICK_BRIGHTNESS 0xFF
+#define BAR_BRIGHTNESS 0xFF
 #define VOLTMETER_BRIGHTNESS_MAX 255
 #define VOLTMETER_FADE_DELAY 5
 //#define VOLTAGE_USE_POTS
@@ -45,13 +45,5 @@
 #define CANBUS_TIMEOUT 300
 
 #define WAKEUP_INTERVAL 5000
-
-// data from Hyundai Santa Fe SE 2011
-// http://www.hyundaiproductinformation.com/vehicles/11_vehicles/11_santaFe/santaFe_featureslist_mech.asp
-// gear ratios are 4.651 2.831 1.842 1.386 1.000 0.772 3.393
-// wheel is 713 rev/mile
-#define GEARS_CNT 7
-#define RPM_TO_SPEED_M_TABLE {0.018068, 0.029683, 0.045621, 0.06063, 0.084034, 0.108852, 0.024767}
-#define RPM_TO_SPEED_D_TABLE {55.3469, 33.6889, 21.9198, 16.4934, 11.9, 9.1868, 40.3767}
 
 #endif
