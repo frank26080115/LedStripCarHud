@@ -10,7 +10,6 @@ Voltage     ADC (10-bit)
 10          468.5
 11          482.2
 12          494.1
--3.6033x^2 + 83.608x
 */
 
 double get_voltage(void)
@@ -18,9 +17,9 @@ double get_voltage(void)
 	static double filter = 0;
 	double x;
 	uint16_t adc, pot_1, pot_2;
-	adc   = (uint16_t)analogRead(PIN_VOLTAGE);
-	pot_1 = (uint16_t)analogRead(PIN_POT_1);
-	pot_2 = (uint16_t)analogRead(PIN_POT_2);
+	adc   = (uint16_t)analog_read(IDX_VOLTAGE);
+	pot_1 = (uint16_t)analog_read(IDX_POT_1);
+	pot_2 = (uint16_t)analog_read(IDX_POT_2);
 	#ifdef VOLTAGE_USE_POTS
 	x = map_pots(adc,
 		pot_1 < pot_2 ? pot_1 : pot_2,
