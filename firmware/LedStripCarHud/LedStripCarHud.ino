@@ -200,7 +200,7 @@ void loop()
 	else if (prev_dial != dial && dial == SHOWDIAL_VOLTAGE)
 	{
 		dbg_printf("voltage fade-in\r\n");
-		draw_voltage_fadein(voltage, 0xFF, 0xFF);
+		draw_voltage_fadein(voltage, TICK_BRIGHTNESS / 4, BAR_BRIGHTNESS / 4);
 	}
 	else if (prev_dial != dial && dial == SHOWDIAL_RPM)
 	{
@@ -213,7 +213,7 @@ void loop()
 	// show the correct dial
 	if (dial == SHOWDIAL_VOLTAGE)
 	{
-		draw_voltage(voltage, TICK_BRIGHTNESS, BAR_BRIGHTNESS);
+		draw_voltage(voltage, TICK_BRIGHTNESS / 4, BAR_BRIGHTNESS / 4);
 	}
 	else if (dial == SHOWDIAL_RPM)
 	{

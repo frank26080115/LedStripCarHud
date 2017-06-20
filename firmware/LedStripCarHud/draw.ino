@@ -113,11 +113,6 @@ void draw_voltage(float voltage, uint8_t tick_brightness, uint8_t bar_brightness
 	int32_t headbrighti;
 	#endif
 
-	if (isunder == false) {
-		tick_brightness /= 3;
-		bar_brightness /= 3;
-	}
-
 	mididx = LED_STRIP_SIZE;
 	//mididx += 1;
 	mididx /= 2;
@@ -275,14 +270,6 @@ void draw_voltage_fadein(float voltage, uint8_t tick_brightness, uint8_t bar_bri
 	int vidx;
 	float vidxf;
 	bool isunder = voltage < VOLTAGE_NORMAL;
-	uint8_t tick_brightness2 = tick_brightness;
-	uint8_t bar_brightness2 = bar_brightness;
-
-	// dim for power saving
-	if (isunder == false) {
-		tick_brightness2 /= 3;
-		bar_brightness2 /= 3;
-	}
 
 	mididx = LED_STRIP_SIZE;
 	//mididx += 1;
@@ -304,31 +291,26 @@ void draw_voltage_fadein(float voltage, uint8_t tick_brightness, uint8_t bar_bri
 		for (i = 0; i <= mididx; i++)
 			{
 			strip_blank();
-			strip_setColourRGB(i, DRAWRGB_GREEN(tick_brightness2));
+			strip_setColourRGB(i, DRAWRGB_GREEN(tick_brightness));
 			strip_show();
 			delay_ms(800 / 2 / LED_STRIP_SIZE);
 		}
 			}
 			else
 			{
-		for (i = 0; i <= tick_brightness2; i++)
+		for (i = 0; i <= tick_brightness; i++)
 		{
 			strip_setColourRGB(mididx, DRAWRGB_GREEN(i));
 			strip_show();
-			delay_ms(800 / tick_brightness2);
+			delay_ms(800 / tick_brightness);
 		}
 			}
 
 	for (fakev = VOLTAGE_MIN; fakev <= voltage; fakev += 0.01)
 	{
-		uint8_t tb = tick_brightness, bb = bar_brightness;
-		if (fakev < VOLTAGE_NORMAL) {
-			tb = tick_brightness2;
-			tb = bar_brightness2;
-		}
-		draw_voltage(fakev, tb, bb);
-		strip_setColourRGB(mididx, DRAWRGB_GREEN(tick_brightness2));
-		strip_setColourRGB(0, DRAWRGB_BLUE(bar_brightness2));
+		draw_voltage(fakev, tick_brightness, bar_brightness);
+		strip_setColourRGB(mididx, DRAWRGB_GREEN(tick_brightness));
+		strip_setColourRGB(0, DRAWRGB_BLUE(bar_brightness));
 		strip_show();
 		delay_ms(5);
 	}
@@ -453,23 +435,6 @@ char draw_intro(int step, int size)
 		didsomething = 1;
 	}
 	return didsomething;
-}
-
-void draw_voltageWarning(uint32_t time, int mph)
-{
-	uint8_t b;
-	int i, j;
-
-	// setup a blink every half second
-	time /= 500;
-	time %= 2;
-	b = time == 0 ? 255 : 0;
-
-	for (i = 0; i < WARNING_SIZE; i++)
-	{
-		j = (LED_STRIP_SIZE - 1);
-		strip_setColourRGB(j, DRAWRGB_RED(b));
-	}
 }
 
 void draw_speed_fadein(int8_t r)
