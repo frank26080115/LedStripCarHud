@@ -1,6 +1,8 @@
-Sorry, but I do not have a circuit diagram of any kind for this project yet. Everything was done on a perfboard "on the fly". The pin assignments are listed in the Arduino sketch, and you should be able to figure out everything using that and the relevant datasheets of the parts used.
+Everything was done on a perfboard "on the fly". The schematic here is provided as an afterthought. It may not accurately represent what I've actually built, and I forgot some of the component values.
 
 ## Part List ##
+
+This is a rough list, may not be complete. Check the schematic, and also fill in any missing parts yourself.
 
  * Teensy 3.2 , Microcontroller
  * MCP2562, CAN bus transceiver, plus relevant decoupling capacitors and chip socket
