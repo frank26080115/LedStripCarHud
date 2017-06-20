@@ -19,6 +19,6 @@ void sleep(void)
 		digitalWrite(PIN_HEARTBEAT, HIGH);
 		if (canbus_simpleCheck()) {
 				break;
-			}
 		}
+	}
 }

@@ -32,7 +32,7 @@ void loop()
 {
 	static int32_t canbus_time = 0;
 	static int32_t step_timer = 0;
-	static char prev_car_on = false, prev_ecu_on = false;
+	static char prev_car_on = false, prev_ecu_on = true;
 	int16_t brightness;
 	char car_is_on;
 	static char ecu_is_on = false;

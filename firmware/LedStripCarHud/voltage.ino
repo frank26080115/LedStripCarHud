@@ -1,17 +1,3 @@
-/*
-Voltage     ADC (10-bit)
-3           215
-4           280.5
-5           335.8
-6           378
-7           409
-8           433.2
-9           452.9
-10          468.5
-11          482.2
-12          494.1
-*/
-
 double get_voltage(void)
 {
 	static double filter = 0;
@@ -30,7 +16,7 @@ double get_voltage(void)
 	{
 		x = map_pots(adc,
 		469,
-		494,
+		525,
 		10,
 		12);
 	}
