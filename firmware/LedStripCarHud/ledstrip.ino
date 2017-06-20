@@ -38,6 +38,9 @@ void strip_show(void)
 		dot->r = 0;
 		dot->g = 0;
 		dot->b = 0;
+		if (i == LED_STRIP_SIZE_VIRTUAL - 1) {
+			dot->r = 1; // possible fix for glitchy strip
+		}
 	}
 	#ifdef DEBUG_STRIP
 	dbg_strip(led_strip, LED_STRIP_SIZE, global_brightness);
