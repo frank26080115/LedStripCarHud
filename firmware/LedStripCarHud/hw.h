@@ -30,4 +30,6 @@
 
 #define LED_STRIP_SIZE_VIRTUAL 144
 
+#define CPU_RESET() (*((uint32_t *)0xE000ED0C) = 0x5FA0004)
+
 #endif

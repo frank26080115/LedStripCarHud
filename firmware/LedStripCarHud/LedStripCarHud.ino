@@ -138,8 +138,7 @@ void loop()
 		wipe_out(-1);
 		digitalWrite(PIN_HEARTBEAT, LOW);
 		sleep();
-		dial = SHOWDIAL_NONE;
-		prev_dial = SHOWDIAL_NONE;
+		CPU_RESET();
 	}
 
 	prev_car_on = car_is_on;
