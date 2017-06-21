@@ -126,13 +126,14 @@ void loop()
 		strip_show();
 		dbg_printf("done\r\n");
 	}
-	else if (ecu_is_on == false && prev_ecu_on != false)
+	else if (ecu_is_on == false && prev_ecu_on != false && canbus_good == false)
 	{
 		dbg_printf("ECU is not on, sleeping\r\n");
 		wipe_out(-1);
 		digitalWrite(PIN_HEARTBEAT, LOW);
 		sleep();
 		dial = SHOWDIAL_NONE;
+		prev_dial = SHOWDIAL_NONE;
 	}
 
 	prev_car_on = car_is_on;
@@ -174,6 +175,12 @@ void loop()
 			dbg_printf("odd... nothing shown\r\n");
 			dial = SHOWDIAL_SPEED;
 		}
+	}
+
+	// this is a last ditch bug fix where the dial is wiped but leaves a blank strip
+	if (dial == SHOWDIAL_NONE && prev_dial != dial)
+	{
+		dial = prev_dial;
 	}
 
 	/*
