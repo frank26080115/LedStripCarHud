@@ -178,9 +178,10 @@ void draw_speedometer(double speed, uint8_t tick_brightness, uint8_t bar_brightn
 	int trailsize;
 
 	tickspace = SPEED_TICKSPACING_SLOW;
+	trailsize = SPEED_NEEDLE_SIZE;
 	trailsize += (int)lround(speed - 80.0);
-	if (trailsize < 3) {
-		trailsize = 3;
+	if (trailsize < SPEED_NEEDLE_SIZE) {
+		trailsize = SPEED_NEEDLE_SIZE;
 	}
 
 	spd *= LED_STRIP_SIZE;
@@ -218,41 +219,38 @@ void draw_speedometer(double speed, uint8_t tick_brightness, uint8_t bar_brightn
 			#ifdef FADING_HEAD
 			if (i == baridx)
 			{
-				strip_setColourRGB(i, DRAWRGB_ORANGE(headbrighti));
+				strip_setColourRGB(i, DRAWRGB_ORANGE(headbrighti, 4));
 			}
 			else if (i == (baridx - trailsize))
-				{
-				strip_setColourRGB(i, DRAWRGB_ORANGE(bar_brightness - headbrighti));
-				}
-				else
-			#endif
-				{
-				strip_setColourRGB(i, DRAWRGB_ORANGE(bar_brightness));
-				}
+			{
+				strip_setColourRGB(i, DRAWRGB_ORANGE(bar_brightness - headbrighti, 4));
 			}
 			else
+			#endif
 			{
+				strip_setColourRGB(i, DRAWRGB_ORANGE(bar_brightness, 4));
+			}
+		}
+		else
+		{
 			strip_setColourRGB(i, DRAWRGB_BLACK());
 		}
 		if ((i % tickspace) == 0)
 		{
-			if (baridx != i)
+			if (i <= baridx)
 			{
-				if (i < baridx)
-				{
-					if (i == 0) {
-						strip_setColourRGB(i, DRAWRGB_BLUE(tick_brightness));
-					}
-					else if ((i / tickspace) <= 4) {
-						strip_setColourRGB(i, DRAWRGB_RED(tick_brightness));
-					}
-					else {
-						strip_setColourRGB(i, DRAWRGB_PURPLE(tick_brightness));
-					}
-				}
-				else {
+				if (i == 0) {
 					strip_setColourRGB(i, DRAWRGB_BLUE(tick_brightness));
 				}
+				else if ((i / tickspace) <= 4) {
+					strip_setColourRGB(i, DRAWRGB_RED(tick_brightness));
+				}
+				else {
+					strip_setColourRGB(i, DRAWRGB_PURPLE(tick_brightness));
+				}
+			}
+			else {
+				strip_setColourRGB(i, DRAWRGB_BLUE(tick_brightness));
 			}
 		}
 	}
@@ -345,24 +343,24 @@ void draw_tachometer_fadein(int rpm)
 	if (i == 0)
 	{
 		for (i = 0; i <= howmuchred; i++)
-	{
-			for (j = firstredidx; j < LED_STRIP_SIZE; j++)
 		{
+			for (j = firstredidx; j < LED_STRIP_SIZE; j++)
+			{
 				strip_setColourRGB(j, DRAWRGB_RED(i));
-		}
+			}
 			strip_show();
 			delay_ms(500 / howmuchred);
 		}
 	}
 	else if (i == 1)
-		{
+	{
 		for (i = LED_STRIP_SIZE - 1; i >= firstredidx; i--)
 		{
 			strip_setColourRGB(i, DRAWRGB_RED(howmuchred));
 			strip_show();
 			delay_ms(500 / howmanyred);
 		}
-		}
+	}
 	else if (i == 2)
 	{
 		for (i = 0; i < LED_STRIP_SIZE; i++)

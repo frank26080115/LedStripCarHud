@@ -31,7 +31,7 @@ led_t;
 #define DRAWRGB_GREEN(x)  0, (x), 0
 #define DRAWRGB_BLUE(x)   0, 0, (x)
 #define DRAWRGB_YELLOW(x) (x), (x), 0
-#define DRAWRGB_ORANGE(x) (x), ((x) + 2) / 4, 0
+#define DRAWRGB_ORANGE(x, d) (x), ((x) + ((d) / 2)) / (d), 0
 #define DRAWRGB_PURPLE(x) (x), 0, (x)
 #define DRAWRGB_BLACK()   0, 0, 0
 
