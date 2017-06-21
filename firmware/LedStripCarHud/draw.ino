@@ -293,6 +293,7 @@ void draw_voltage_fadein(float voltage, uint8_t tick_brightness, uint8_t bar_bri
 		{
 			strip_blank();
 			strip_setColourRGB(i, DRAWRGB_GREEN(tick_brightness));
+			strip_setBrightness(get_brightness());
 			strip_show();
 			delay_ms(800 / 2 / LED_STRIP_SIZE);
 		}
@@ -302,6 +303,7 @@ void draw_voltage_fadein(float voltage, uint8_t tick_brightness, uint8_t bar_bri
 		for (i = 0; i <= tick_brightness; i++)
 		{
 			strip_setColourRGB(mididx, DRAWRGB_GREEN(i));
+			strip_setBrightness(get_brightness());
 			strip_show();
 			delay_ms(800 / tick_brightness);
 		}
@@ -312,6 +314,7 @@ void draw_voltage_fadein(float voltage, uint8_t tick_brightness, uint8_t bar_bri
 		draw_voltage(fakev, tick_brightness, bar_brightness);
 		strip_setColourRGB(mididx, DRAWRGB_GREEN(tick_brightness));
 		strip_setColourRGB(0, DRAWRGB_BLUE(bar_brightness));
+		strip_setBrightness(get_brightness());
 		strip_show();
 		delay_ms(5);
 	}
@@ -351,6 +354,7 @@ void draw_tachometer_fadein(int rpm)
 			{
 				strip_setColourRGB(j, DRAWRGB_RED(i));
 			}
+			strip_setBrightness(get_brightness());
 			strip_show();
 			delay_ms(500 / howmuchred);
 		}
@@ -360,6 +364,7 @@ void draw_tachometer_fadein(int rpm)
 		for (i = LED_STRIP_SIZE - 1; i >= firstredidx; i--)
 		{
 			strip_setColourRGB(i, DRAWRGB_RED(howmuchred));
+			strip_setBrightness(get_brightness());
 			strip_show();
 			delay_ms(500 / howmanyred);
 		}
@@ -376,6 +381,7 @@ void draw_tachometer_fadein(int rpm)
 					strip_setColourRGB(j, DRAWRGB_RED(howmuchred));
 				}
 			}
+			strip_setBrightness(get_brightness());
 			strip_show();
 			delay_ms(500 / LED_STRIP_SIZE);
 		}
@@ -390,6 +396,7 @@ void draw_tachometer_fadein(int rpm)
 		for (j = LED_STRIP_SIZE - 1; j >= firstredidx && j >= rpmidx; j--) {
 			strip_setColourRGB(j, DRAWRGB_RED(howmuchred));
 		}
+		strip_setBrightness(get_brightness());
 		strip_show();
 		delay_ms(500 / (rpm / 10));
 	}
@@ -441,6 +448,9 @@ char draw_intro(int step, int size)
 void draw_speed_fadein(int8_t r)
 {
 	uint32_t x, b;
+	int startbright = strip_getBrightness();
+	int endbright;
+
 	if (r < 0) {
 		x = random() % 7;
 	}
@@ -476,6 +486,24 @@ void draw_speed_fadein(int8_t r)
 			draw_speed_fadein_random(b);
 			break;
 	}
+
+	endbright = get_brightness();
+
+	// do a final smooth fade to the right brightness
+	// honestly this is only a cover-my-ass bug fix because of the way draw_speed_fadein_random works
+	// just playing with another style of fixing a problem, seeing how well it works
+	for (x = startbright; x != endbright; ) {
+		strip_setBrightness(x);
+		strip_show();
+		delay_ms(10);
+		endbright = get_brightness();
+		if (x > endbright) {
+			x--;
+		}
+		else if (x < endbright) {
+			x++;
+		}
+	}
 }
 
 void draw_speed_fadein_train(uint8_t b)
@@ -488,6 +516,7 @@ void draw_speed_fadein_train(uint8_t b)
 		{
 			strip_setColourRGB(j, DRAWRGB_BLUE(b));
 		}
+		strip_setBrightness(get_brightness());
 		strip_show();
 		delay_ms(FADEIN_TIME / LED_STRIP_SIZE);
 	}
@@ -507,6 +536,7 @@ void draw_speed_fadein_2train(uint8_t b)
 		{
 			strip_setColourRGB(j, DRAWRGB_BLUE(b));
 		}
+		strip_setBrightness(get_brightness());
 		strip_show();
 		delay_ms(FADEIN_TIME / (LED_STRIP_SIZE / 2));
 	}
@@ -523,6 +553,7 @@ void draw_speed_fadein_bright(uint8_t b)
 		{
 			strip_setColourRGB(j, DRAWRGB_BLUE(i));
 		}
+		strip_setBrightness(get_brightness());
 		strip_show();
 		delay_ms(FADEIN_TIME / b);
 	}
@@ -538,6 +569,7 @@ void draw_speed_fadein_brighteach(uint8_t b)
 		for (j = 0; j < b; j++)
 		{
 			strip_setColourRGB(i, DRAWRGB_BLUE(j));
+			strip_setBrightness(get_brightness());
 			strip_show();
 			delay_ms((FADEIN_TIME / b) / 8);
 		}
@@ -555,6 +587,7 @@ void draw_speed_fadein_brighteach2(uint8_t b)
 		{
 			strip_setColourRGB((LED_STRIP_SIZE / 2) + i, DRAWRGB_BLUE(j));
 			strip_setColourRGB((LED_STRIP_SIZE / 2) - i, DRAWRGB_BLUE(j));
+			strip_setBrightness(get_brightness());
 			strip_show();
 			delay_ms((FADEIN_TIME / b) / 4);
 		}
@@ -572,6 +605,7 @@ void draw_speed_fadein_brighteach3(uint8_t b)
 		{
 			strip_setColourRGB(i, DRAWRGB_BLUE(j));
 			strip_setColourRGB(LED_STRIP_SIZE - 1 - i, DRAWRGB_BLUE(j));
+			strip_setBrightness(get_brightness());
 			strip_show();
 			delay_ms((FADEIN_TIME / b) / 4);
 		}
@@ -583,6 +617,7 @@ void draw_speed_fadein_random(uint8_t b)
 	bool alllit = false;
 	bool found;
 	uint32_t starttime = millis();
+
 	while (alllit == false)
 	{
 		int16_t i;
