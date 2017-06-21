@@ -3,7 +3,7 @@ double calc_mph(int kmh)
 	double simple;
 	simple = (double)kmh;
 	simple *= 0.621371;
-		return simple;
+	return simple;
 }
 
 double map_pots(uint16_t x, uint16_t lower, uint16_t higher, uint16_t range_min, uint16_t range_max)

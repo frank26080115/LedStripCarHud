@@ -125,6 +125,11 @@ void loop()
 		strip_blank();
 		strip_show();
 		dbg_printf("done\r\n");
+		/*
+		the way this intro animation is called is different from the fade-in function calls...
+		why?
+		I'm just playing around with different ways of implemention of animation
+		*/
 	}
 	else if (ecu_is_on == false && prev_ecu_on != false && canbus_good == false)
 	{
@@ -143,9 +148,9 @@ void loop()
 	{
 		if (dial == SHOWDIAL_MAYBE_SPEED)
 		{
-			if ((now - step_timer) > 2000) {
+			if ((now - step_timer) > 2000) { // we have been revving but not moving for so long
 				dial = SHOWDIAL_RPM;
-				dbg_printf("REVVVV\r\n");
+				dbg_printf("VROOOOM VROOOOM\r\n");
 			}
 		}
 
@@ -220,7 +225,7 @@ void loop()
 	// show the correct dial
 	if (dial == SHOWDIAL_VOLTAGE)
 	{
-		draw_voltage(voltage, TICK_BRIGHTNESS / 4, BAR_BRIGHTNESS / 4);
+		draw_voltage(voltage, TICK_BRIGHTNESS / 4, BAR_BRIGHTNESS / 4); // voltmeter can be a bit dimmer to prevent glitchy LEDs
 	}
 	else if (dial == SHOWDIAL_RPM)
 	{

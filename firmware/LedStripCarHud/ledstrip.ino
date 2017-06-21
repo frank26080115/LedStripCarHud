@@ -24,6 +24,8 @@ void strip_init(void)
 void strip_show(void)
 {
 	uint16_t i;
+	// copy over colours, adjusting for RGB order
+	// I know that I can adjust the order with the FastLED initializer
 	for (i = 0; i < LED_STRIP_SIZE; i++)
 	{
 		led_t* ptr = &led_strip[i];
@@ -32,6 +34,7 @@ void strip_show(void)
 		dot->g = led_adjustChan(ptr->g, global_brightness);
 		dot->r = led_adjustChan(ptr->b, global_brightness);
 	}
+	// blank out non-existant LEDs, or leftover LEDs
 	for (; i < LED_STRIP_SIZE_VIRTUAL; i++)
 	{
 		CRGB* dot = &strip_array[i];
@@ -125,13 +128,13 @@ uint8_t led_adjustChan(uint8_t c, uint8_t b)
 	}
 	r = c;
 	r *= b;
-	r += 127;
+	r += 127; // rounding
 	r /= 255;
 	if (r <= 0) {
-		return 1;
+		return 1; // ensure minimum is still visible
 	}
 	if (r >= b) {
-		return b;
+		return b; // snsure never exceed brightness
 	}
 	return r;
 }

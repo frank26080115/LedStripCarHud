@@ -14,6 +14,7 @@ double get_voltage(void)
 		VOLTAGE_NORMAL);
 	#else
 	{
+		// I manually calibrated this by hand, pots are ignored
 		x = map_pots(adc,
 		469,
 		525,

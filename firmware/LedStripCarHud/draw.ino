@@ -9,6 +9,10 @@ void draw_tachometer(int rpm)
 	int i;
 	int tail = TACHOMETER_NEEDLE_SIZE;
 
+	/*
+	"red" refers to the engine redline indicator on the tachometer
+	*/
+
 	howmuchred = rpm - RPM_IDLE;
 	if (howmuchred < 0) {
 		howmuchred = 0;
@@ -284,24 +288,24 @@ void draw_voltage_fadein(float voltage, uint8_t tick_brightness, uint8_t bar_bri
 	strip_blank();
 	strip_show();
 	if (random() % 2 == 0)
-		{
+	{
 		for (i = 0; i <= mididx; i++)
-			{
+		{
 			strip_blank();
 			strip_setColourRGB(i, DRAWRGB_GREEN(tick_brightness));
 			strip_show();
 			delay_ms(800 / 2 / LED_STRIP_SIZE);
 		}
-			}
-			else
-			{
+	}
+	else
+	{
 		for (i = 0; i <= tick_brightness; i++)
 		{
 			strip_setColourRGB(mididx, DRAWRGB_GREEN(i));
 			strip_show();
 			delay_ms(800 / tick_brightness);
 		}
-			}
+	}
 
 	for (fakev = VOLTAGE_MIN; fakev <= voltage; fakev += 0.01)
 	{
@@ -323,7 +327,7 @@ void draw_tachometer_fadein(int rpm)
 	howmuchred = rpm - RPM_IDLE;
 	if (howmuchred < 0) {
 		howmuchred = 0;
-		}
+	}
 	howmuchred *= 0xFF;
 	howmuchred += (RPM_DISPLAY_THRESH - RPM_IDLE) / 2; // round
 	howmuchred /= (RPM_DISPLAY_THRESH - RPM_IDLE);
