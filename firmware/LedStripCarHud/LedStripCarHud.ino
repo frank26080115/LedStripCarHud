@@ -24,7 +24,8 @@ void setup()
 	strip_blank();
 	strip_show();
 	canbus_init();
-	strip_setBrightness(BRIGHTNESS_MIN);
+	analog_task();
+	strip_setBrightness(get_brightness());
 	//wait_serial();
 }
 
