@@ -7,6 +7,7 @@ void draw_tachometer(int rpm)
 	int32_t headbright, headbright2;
 	#endif
 	int i;
+	int tail = TACHOMETER_NEEDLE_SIZE;
 
 	howmuchred = rpm - RPM_IDLE;
 	if (howmuchred < 0) {
@@ -55,14 +56,14 @@ void draw_tachometer(int rpm)
 				{
 					strip_setColourRGB(i, DRAWRGB_GREEN(headbright));
 				}
-				else if (i == (rpmidx - 5))
+				else if (i == (rpmidx - tail))
 				{
 					strip_setColourRGB(i, DRAWRGB_GREEN(BAR_BRIGHTNESS - headbright));
 				}
 				else
 				#endif
 				{
-					if (i >= (rpmidx - 5))
+					if (i >= (rpmidx - tail))
 					{
 						strip_setColourRGB(i, DRAWRGB_GREEN(BAR_BRIGHTNESS));
 					}
@@ -75,7 +76,7 @@ void draw_tachometer(int rpm)
 				{
 					strip_setColourRGB(i, DRAWRGB_PURPLE(headbright));
 				}
-				else if (i == (rpmidx - 5))
+				else if (i == (rpmidx - tail))
 				{
 					strip_setColourRGB(i, DRAWRGB_PURPLE(BAR_BRIGHTNESS - headbright));
 				}
@@ -90,7 +91,7 @@ void draw_tachometer(int rpm)
 		{
 			strip_setColourRGB(i, DRAWRGB_RED(howmuchred));
 		}
-		}
+	}
 	if (rpmidx >= firstredidx) {
 		strip_setColourRGB(0, DRAWRGB_RED(howmuchred));
 		strip_setColourRGB(1, DRAWRGB_RED(howmuchred));
@@ -107,7 +108,6 @@ void draw_voltage(float voltage, uint8_t tick_brightness, uint8_t bar_brightness
 	int mididx;
 	int vidx;
 	float vidxf;
-	bool isunder = voltage < VOLTAGE_NORMAL;
 	#ifdef FADING_HEAD
 	float headbright;
 	int32_t headbrighti;
@@ -267,7 +267,6 @@ void draw_voltage_fadein(float voltage, uint8_t tick_brightness, uint8_t bar_bri
 	float fakev;
 	int vidx;
 	float vidxf;
-	bool isunder = voltage < VOLTAGE_NORMAL;
 
 	mididx = LED_STRIP_SIZE;
 	//mididx += 1;

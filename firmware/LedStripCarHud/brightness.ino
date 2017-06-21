@@ -4,7 +4,6 @@ circuit tested, dark reads 185, bright reads 944, disconnected reads less than 1
 
 uint8_t get_brightness(void)
 {
-	static double filter = BRIGHTNESS_MIN;
 	static int32_t chase = BRIGHTNESS_MIN << BRIGHTNESS_FILTER_SHIFT;
 
 	int32_t r, c;
