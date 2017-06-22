@@ -93,7 +93,7 @@ void loop()
 	}
 	else if (canbus_good == false)
 	{
-		if ((now - canbus_time) > CANBUS_ECU_TIMEOUT)
+		if ((now > canbus_time) && (now - canbus_time) > CANBUS_ECU_TIMEOUT)
 		{
 			car_is_on = false;
 			ecu_is_on = false;
@@ -138,7 +138,13 @@ void loop()
 		wipe_out(-1);
 		digitalWrite(PIN_HEARTBEAT, LOW);
 		sleep();
-		CPU_RESET();
+		// restore states to seem like new
+		prev_car_on = false;
+		prev_ecu_on = false;
+		prev_dial = SHOWDIAL_NONE;
+		canbus_time = now;
+		//systick_millis_count = 0; // almost a reboot
+		return;
 	}
 
 	prev_car_on = car_is_on;
@@ -200,6 +206,7 @@ void loop()
 		if (((prev_dial == SHOWDIAL_SPEED && dial == SHOWDIAL_MAYBE_SPEED) || (prev_dial == SHOWDIAL_MAYBE_SPEED && dial == SHOWDIAL_SPEED)) == false) {
 			dbg_printf("fade-out\r\n");
 			wipe_out(-1);
+			prev_dial = SHOWDIAL_NONE; // forces animations
 		}
 	}
 
@@ -208,6 +215,7 @@ void loop()
 	{
 		dbg_printf("speed fade-in\r\n");
 		draw_speed_fadein(-1);
+		canbus_time += 3000; // a really fast start seem to make the ECU timeout even jf it's on
 	}
 	else if (prev_dial != dial && dial == SHOWDIAL_VOLTAGE)
 	{
