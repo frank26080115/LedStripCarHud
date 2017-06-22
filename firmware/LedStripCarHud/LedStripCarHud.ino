@@ -142,8 +142,8 @@ void loop()
 		prev_car_on = false;
 		prev_ecu_on = false;
 		prev_dial = SHOWDIAL_NONE;
-		canbus_time = now;
-		//systick_millis_count = 0; // almost a reboot
+		canbus_time = 0;
+		systick_millis_count = 0; // almost a reboot
 		return;
 	}
 
