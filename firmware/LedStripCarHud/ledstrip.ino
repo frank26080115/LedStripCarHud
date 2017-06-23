@@ -117,6 +117,10 @@ void strip_fill(uint8_t r, uint8_t g, uint8_t b)
 	}
 }
 
+/*
+this function multiplies a colour intensity by a brightness
+but it has a rule that prevents a LED from going totally off
+*/
 uint8_t led_adjustChan(uint8_t c, uint8_t b)
 {
 	int32_t r;

@@ -39,7 +39,7 @@ void loop()
 	static char ecu_is_on = false;
 	int32_t now;
 	char canbus_good;
-	static signed int kmh, rpm, pedal, gear;
+	static signed int kmh, rpm, pedal;
 	static double mph;
 	double voltage;
 	static uint8_t prev_dial = SHOWDIAL_NONE;
@@ -72,7 +72,7 @@ void loop()
 
 	if (((now / 500) % 2) == 0) {
 		if (dbg_latched == false) {
-			dbg_printf("%ul, %d, %d, %3.1f, %d, %d, %d, %2.1f, \r\n", now, rpm, kmh, mph, pedal, gear, brightness, voltage);
+			dbg_printf("%ul, %d, %d, %3.1f, %d, %d, %2.1f, \r\n", now, rpm, kmh, mph, pedal, brightness, voltage);
 		}
 		dbg_latched = true;
 		digitalWrite(PIN_HEARTBEAT, HIGH);

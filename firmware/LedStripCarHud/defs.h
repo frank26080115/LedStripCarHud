@@ -44,6 +44,7 @@ enum
 	SHOWDIAL_MAYBE_SPEED,
 };
 
-#define dbg_printf Serial.printf
+//#define dbg_printf Serial.printf // enable
+#define dbg_printf(...) // disable
 
 #endif

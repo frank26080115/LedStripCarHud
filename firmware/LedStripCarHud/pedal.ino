@@ -33,6 +33,7 @@ void pedal_track(uint8_t pedal, uint16_t rpm)
 			if (pedal_max == 0 || x > pedal_max)
 			{
 				pedal_max = x;
+				// currently this is only used for statistics
 			}
 		}
 	}
