@@ -7,18 +7,18 @@
 
 #define FADING_HEAD
 
-#define RPM_MAX 8000
-#define RPM_REDLINE 6500
-#define RPM_IDLE 500
-#define RPM_ENGINE_ON 50
-#define RPM_DISPLAY_THRESH 800
-#define PEDAL_REQUIRED 5
+#define RPM_MAX                8000
+#define RPM_REDLINE            6500
+#define RPM_IDLE               500
+#define RPM_ENGINE_ON          50
+#define RPM_DISPLAY_THRESH     800
+#define PEDAL_REQUIRED         5
 #define TACHOMETER_NEEDLE_SIZE 5
 
-#define SPEED_DISPLAY_THRESH    2
-#define SPEED_TICKSPACING_SLOW  6
-#define SPEED_BACKFADE          8
-#define SPEED_NEEDLE_SIZE       3
+#define SPEED_TICK_SPACING   6
+#define SPEED_BACKFADE       8
+#define SPEED_NEEDLE_SIZE    3
+#define SPEED_MAX            120
 
 #define VOLTAGE_MIN    10.0
 #define VOLTAGE_NORMAL 12.0

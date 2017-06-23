@@ -46,6 +46,9 @@ void draw_tachometer(int rpm)
 	if (headbright > BAR_BRIGHTNESS) {
 		headbright = BAR_BRIGHTNESS;
 	}
+	if (rpm >= RPM_MAX) { // HA, like that'll ever happen
+		headbright = BAR_BRIGHTNESS;
+	}
 	#endif
 
 	for (i = 0; i < LED_STRIP_SIZE; i++)
@@ -178,33 +181,82 @@ void draw_speedometer(double speed, uint8_t tick_brightness, uint8_t bar_brightn
 	#ifdef FADING_HEAD
 	float headbright;
 	int32_t headbrighti;
+	float spdmin;
 	#endif
 	int trailsize;
+	int tickspeed = 10;
+	int spdmax1, spdmax2;
+	int addbar;
 
-	tickspace = SPEED_TICKSPACING_SLOW;
+	spdmax1 = LED_STRIP_SIZE / SPEED_TICK_SPACING;
+	spdmax1 *= tickspeed; // result should be 80
+	spdmax2 = SPEED_MAX; // limit beyond the last tick
+
+	tickspace = SPEED_TICK_SPACING;
 	trailsize = SPEED_NEEDLE_SIZE;
-	trailsize += (int)lround(speed - 80.0);
+	trailsize += (int)lround(spd - ((double)spdmax1));
 	if (trailsize < SPEED_NEEDLE_SIZE) {
 		trailsize = SPEED_NEEDLE_SIZE;
 	}
 
+	if (spd < (double)tickspeed)
+	{
+		// for speeds below the first tick, we have the zero point before the first tick
+		// because I want to hide the needle at 0 MPH
+		// by doing the math on the speed variable itself, it's easier to manage the fading head later
+		double lowspeeddiff = ((double)tickspeed) - spd;
+		double multip = (((double)SPEED_NEEDLE_SIZE)/((double)SPEED_TICK_SPACING * 2));
+		lowspeeddiff *= 1.0 + multip;
+		spd = ((double)tickspeed) - lowspeeddiff;
+		spdmin = ((double)tickspeed) * multip;
+		spdmin *= -1;
+	}
+
 	spd *= LED_STRIP_SIZE;
-	spd /= 80;
+	spd /= spdmax1;
 	#ifndef FADING_HEAD
 	baridx = (int32_t)lround(spd);
 	#else
 	baridx = (int32_t)floor(spd);
 	#endif
 
-	// for better UX
-	baridx += 1;
+	// for better UX, center of "needle" is the speed
+	addbar = SPEED_NEEDLE_SIZE + 1;
+	addbar /= 2;
+	baridx += addbar;
+
+	// if baridx is negative, we don't care
 
 	#ifdef FADING_HEAD
-	headbright  = (speed * LED_STRIP_SIZE);
-	headbright  = fmodf(headbright, 80.0);
-	headbright *= bar_brightness;
-	headbright /= 80.0;
-	headbrighti = (int)lroundf(headbright);
+	if (spd < ((double)tickspeed))
+	{
+		float spd2 = spd - spdmin; // spdmin is negative already
+		float spdrange = ((double)tickspeed) - spdmin;
+		headbright  = (spd2 * LED_STRIP_SIZE); // mathematically this doesn't make sense but the result is the same anyways
+		headbright  = fmodf(headbright, spdrange);
+		headbright *= bar_brightness;
+		headbright /= spdrange;
+	}
+	else if (spd < ((float)spdmax1))
+	{
+		headbright  = (speed * LED_STRIP_SIZE);
+		headbright  = fmodf(headbright, ((float)spdmax1));
+		headbright *= bar_brightness;
+		headbright /= ((float)spdmax1);
+		headbrighti = (int)lroundf(headbright);
+	}
+	else if (spd >= ((float)spdmax1))
+	{
+		float spd2 = speed - ((float)spdmax1);
+		headbright  = (spd2 * LED_STRIP_SIZE);
+		headbright  = fmodf(headbright, (float)(spdmax2 - spdmax1));
+		headbright *= bar_brightness;
+		headbright /= (float)(spdmax2 - spdmax1);
+		headbrighti = bar_brightness - (int)lroundf(headbright);
+		// since the bar grows from right to left in this case,
+		// the "head" (on the right) is hidden by the final tick
+		// what we actually care about is the dimming of the "tail" (on the left)
+	}
 	#endif
 
 	if (baridx >= (LED_STRIP_SIZE - 1)) {
@@ -213,12 +265,11 @@ void draw_speedometer(double speed, uint8_t tick_brightness, uint8_t bar_brightn
 
 	for (i = 0; i < LED_STRIP_SIZE; i++)
 	{
-		strip_setColourRGB(i, DRAWRGB_BLACK());
 		if (i == 0 && speed < 0.5)
 		{
 			strip_setColourRGB(i, DRAWRGB_BLACK()); // this will be overwritten by the first tick
 		}
-		else if (i <= baridx && i >= (baridx - trailsize))
+		else if (i <= baridx && i >= (baridx - trailsize)) // is part of the needle
 		{
 			#ifdef FADING_HEAD
 			if (i == baridx)
@@ -237,9 +288,10 @@ void draw_speedometer(double speed, uint8_t tick_brightness, uint8_t bar_brightn
 		}
 		else
 		{
-			strip_setColourRGB(i, DRAWRGB_BLACK());
+			strip_setColourRGB(i, DRAWRGB_BLACK()); // default to nothing
 		}
-		if ((i % tickspace) == 0)
+
+		if ((i % tickspace) == 0) // is a tick
 		{
 			if (i <= baridx)
 			{
@@ -490,8 +542,9 @@ void draw_speed_fadein(int8_t r)
 	endbright = get_brightness();
 
 	// do a final smooth fade to the right brightness
-	// honestly this is only a cover-my-ass bug fix because of the way draw_speed_fadein_random works
-	// just playing with another style of fixing a problem, seeing how well it works
+	// the animations with moving dots will have brightness adjusted with each movement, which is great
+	// but the animations that involve increasing brightness, those I want an uninterrupted increase
+	// so we adjust for brightness after the animation is done
 	for (x = startbright; x != endbright; ) {
 		strip_setBrightness(x);
 		strip_show();
@@ -512,7 +565,7 @@ void draw_speed_fadein_train(uint8_t b)
 	for (i = 0; i < LED_STRIP_SIZE; i++)
 	{
 		strip_blank();
-		for (j = i; j >= 0; j -= SPEED_TICKSPACING_SLOW)
+		for (j = i; j >= 0; j -= SPEED_TICK_SPACING)
 		{
 			strip_setColourRGB(j, DRAWRGB_BLUE(b));
 		}
@@ -525,14 +578,14 @@ void draw_speed_fadein_train(uint8_t b)
 void draw_speed_fadein_2train(uint8_t b)
 {
 	int16_t i, j;
-	for (i = 0; i <= (4 * SPEED_TICKSPACING_SLOW); i++)
+	for (i = 0; i <= (4 * SPEED_TICK_SPACING); i++)
 	{
 		strip_blank();
-		for (j = i; j >= 0; j -= SPEED_TICKSPACING_SLOW)
+		for (j = i; j >= 0; j -= SPEED_TICK_SPACING)
 		{
 			strip_setColourRGB(j, DRAWRGB_BLUE(b));
 		}
-		for (j = LED_STRIP_SIZE - 1 - i; j < LED_STRIP_SIZE; j+= SPEED_TICKSPACING_SLOW)
+		for (j = LED_STRIP_SIZE - 1 - i; j < LED_STRIP_SIZE; j+= SPEED_TICK_SPACING)
 		{
 			strip_setColourRGB(j, DRAWRGB_BLUE(b));
 		}
@@ -549,11 +602,10 @@ void draw_speed_fadein_bright(uint8_t b)
 	strip_show();
 	for (i = 0; i < b; i++)
 	{
-		for (j = 0; j < LED_STRIP_SIZE; j += SPEED_TICKSPACING_SLOW)
+		for (j = 0; j < LED_STRIP_SIZE; j += SPEED_TICK_SPACING)
 		{
 			strip_setColourRGB(j, DRAWRGB_BLUE(i));
 		}
-		strip_setBrightness(get_brightness());
 		strip_show();
 		delay_ms(FADEIN_TIME / b);
 	}
@@ -564,12 +616,11 @@ void draw_speed_fadein_brighteach(uint8_t b)
 	int16_t i, j;
 	strip_blank();
 	strip_show();
-	for (i = 0; i < LED_STRIP_SIZE; i += SPEED_TICKSPACING_SLOW)
+	for (i = 0; i < LED_STRIP_SIZE; i += SPEED_TICK_SPACING)
 	{
 		for (j = 0; j < b; j++)
 		{
 			strip_setColourRGB(i, DRAWRGB_BLUE(j));
-			strip_setBrightness(get_brightness());
 			strip_show();
 			delay_ms((FADEIN_TIME / b) / 8);
 		}
@@ -581,13 +632,12 @@ void draw_speed_fadein_brighteach2(uint8_t b)
 	int16_t i, j;
 	strip_blank();
 	strip_show();
-	for (i = 0; i <= LED_STRIP_SIZE / 2; i += SPEED_TICKSPACING_SLOW)
+	for (i = 0; i <= LED_STRIP_SIZE / 2; i += SPEED_TICK_SPACING)
 	{
 		for (j = 0; j < b; j++)
 		{
 			strip_setColourRGB((LED_STRIP_SIZE / 2) + i, DRAWRGB_BLUE(j));
 			strip_setColourRGB((LED_STRIP_SIZE / 2) - i, DRAWRGB_BLUE(j));
-			strip_setBrightness(get_brightness());
 			strip_show();
 			delay_ms((FADEIN_TIME / b) / 4);
 		}
@@ -599,13 +649,12 @@ void draw_speed_fadein_brighteach3(uint8_t b)
 	int16_t i, j;
 	strip_blank();
 	strip_show();
-	for (i = 0; i <= LED_STRIP_SIZE / 2; i += SPEED_TICKSPACING_SLOW)
+	for (i = 0; i <= LED_STRIP_SIZE / 2; i += SPEED_TICK_SPACING)
 	{
 		for (j = 0; j < b; j++)
 		{
 			strip_setColourRGB(i, DRAWRGB_BLUE(j));
 			strip_setColourRGB(LED_STRIP_SIZE - 1 - i, DRAWRGB_BLUE(j));
-			strip_setBrightness(get_brightness());
 			strip_show();
 			delay_ms((FADEIN_TIME / b) / 4);
 		}
@@ -641,7 +690,7 @@ void draw_speed_fadein_random(uint8_t b)
 			rnd = random() % chance;
 			if (rnd == 0)
 			{
-				rnd = (random() % 9) * SPEED_TICKSPACING_SLOW;
+				rnd = (random() % 9) * SPEED_TICK_SPACING;
 			}
 			else
 			{
@@ -658,7 +707,7 @@ void draw_speed_fadein_random(uint8_t b)
 
 		strip_setColourRGB(rnd, DRAWRGB_BLUE(b));
 		strip_show();
-		if ((rnd % SPEED_TICKSPACING_SLOW) != 0)
+		if ((rnd % SPEED_TICK_SPACING) != 0)
 		{
 			for (i = b; ; i -= spd)
 			{
@@ -673,7 +722,7 @@ void draw_speed_fadein_random(uint8_t b)
 		}
 
 		alllit = true;
-		for (i = 0; i < LED_STRIP_SIZE && alllit != false; i += SPEED_TICKSPACING_SLOW)
+		for (i = 0; i < LED_STRIP_SIZE && alllit != false; i += SPEED_TICK_SPACING)
 		{
 			if (strip_getColourB(i) <= 0) {
 				alllit = false;
