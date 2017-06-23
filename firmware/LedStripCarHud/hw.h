@@ -30,6 +30,8 @@
 
 #define LED_STRIP_SIZE_VIRTUAL 144
 
+#define LEDSTRIP_POWER_LIMIT (4 * 0xFF * 3)
+
 #define CPU_RESET() (*((uint32_t *)0xE000ED0C) = 0x5FA0004) // doesn't seem to work right
 
 #endif

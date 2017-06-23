@@ -4,6 +4,8 @@ CRGB strip_array[LED_STRIP_SIZE_VIRTUAL];
 uint8_t global_brightness;
 led_t led_strip[LED_STRIP_SIZE_VIRTUAL];
 
+uint32_t strip_power = 0;
+
 //#define DEBUG_STRIP
 
 void strip_init(void)
@@ -24,15 +26,32 @@ void strip_init(void)
 void strip_show(void)
 {
 	uint16_t i;
+	uint8_t b = global_brightness;
+	uint32_t pwr;
 	// copy over colours, adjusting for RGB order
 	// I know that I can adjust the order with the FastLED initializer
-	for (i = 0; i < LED_STRIP_SIZE; i++)
+	while (1)
 	{
-		led_t* ptr = &led_strip[i];
-		CRGB* dot = &strip_array[i];
-		dot->b = led_adjustChan(ptr->r, global_brightness);
-		dot->g = led_adjustChan(ptr->g, global_brightness);
-		dot->r = led_adjustChan(ptr->b, global_brightness);
+		pwr = 0;
+		for (i = 0; i < LED_STRIP_SIZE; i++)
+		{
+			led_t* ptr = &led_strip[i];
+			CRGB* dot = &strip_array[i];
+			dot->b = led_adjustChan(ptr->r, b);
+			dot->g = led_adjustChan(ptr->g, b);
+			dot->r = led_adjustChan(ptr->b, b);
+			pwr += dot->r;
+			pwr += dot->g;
+			pwr += dot->b;
+		}
+		if (pwr > LEDSTRIP_POWER_LIMIT)
+		{
+			b--;
+		}
+		else
+		{
+			break;
+		}
 	}
 	// blank out non-existant LEDs, or leftover LEDs
 	for (; i < LED_STRIP_SIZE_VIRTUAL; i++)
@@ -49,6 +68,20 @@ void strip_show(void)
 	dbg_strip(led_strip, LED_STRIP_SIZE, global_brightness);
 	#endif
 	strip->show();
+}
+
+uint32_t strip_getPower(void)
+{
+	uint16_t i;
+	uint32_t pwr;
+	for (i = 0; i < LED_STRIP_SIZE; i++)
+	{
+		led_t* ptr = &led_strip[i];
+		pwr += led_adjustChan(ptr->r, global_brightness);
+		pwr += led_adjustChan(ptr->g, global_brightness);
+		pwr += led_adjustChan(ptr->b, global_brightness);
+	}
+	return pwr;
 }
 
 void strip_setBrightness(int16_t x)

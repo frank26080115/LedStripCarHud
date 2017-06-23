@@ -10,12 +10,12 @@ void tests(void)
 	//test_voltmeter();
 	//test_tachometer();
 	//test_intro();
-	//test_speedometer();
+	test_speedometer();
 	//test_brightness();
 	//test_canbus();
 	//test_sleep();
 	//test_burn();
-	test_dials();
+	//test_dials();
 }
 
 void test_heartbeat(void)
@@ -201,27 +201,25 @@ void test_tachometer(void)
 
 void test_speedometer(void)
 {
-	uint32_t t;
+	int32_t t;
 	strip_init();
-	strip_setBrightness(64);
+	strip_setBrightness(0xFF);
 	strip_blank();
 	strip_show();
 	while (1)
 	{
-		double spd = (get_voltage() - 10) * (120 / 3);
-		if (spd < 0)
+		for (t = 0; 122 >= calc_mph(t); t++)
 		{
-			spd = 0;
-		}
-		draw_speed_fadein(-1);
-		t = millis();
-		while ((millis() - t) < 1000)
-		{
-			draw_speedometer(spd, 0xFF, 0xFF);
+			draw_speedometer(calc_mph(t), 0xFF, 0xFF);
 			strip_show();
-			get_voltage();
+			delay_ms(100);
 		}
-		wipe_out(-1);
+		for (; 0 <= t; t--)
+		{
+			draw_speedometer(calc_mph(t), 0xFF, 0xFF);
+			strip_show();
+			delay_ms(100);
+		}
 	}
 }
 
@@ -299,24 +297,19 @@ void test_sleep(void)
 
 void test_burn(void)
 {
-	uint32_t now, i;
-	int pedal, rpm;
+	uint32_t i;
 	strip_init();
 	strip_blank();
 	strip_setBrightness(0xFF);
-	canbus_init();
 	while(true)
 	{
-		tasks(now = millis());
-		if (canbus_readAll(NULL, &rpm, &pedal))
+		strip_blank();
+		for (i = 0; i < LED_STRIP_SIZE; i++)
 		{
-			pedal_track(pedal, rpm);
-			pedal = get_pedal();
-			strip_blank();
-			for (i = 0; i <= pedal / 2; i++) {
-				strip_setColourRGB(i, DRAWRGB_WHITE(0xFF));
-			}
+			strip_setColourRGB(i, DRAWRGB_WHITE(0xFF));
+			Serial.printf("%d, %d\r\n", i, strip_getPower());
 			strip_show();
+			delay_ms(1000);
 		}
 	}
 }
