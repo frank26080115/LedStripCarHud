@@ -193,7 +193,7 @@ void draw_speedometer(double speed, uint8_t tick_brightness, uint8_t bar_brightn
 
 	tickspace = SPEED_TICK_SPACING;
 	trailsize = SPEED_NEEDLE_SIZE;
-	trailsize += (int)lround(spd - ((double)spdmax1));
+	trailsize += (int)lround(spd - ((double)spdmax1)); // sorry this is a bit lazy
 	if (trailsize < SPEED_NEEDLE_SIZE) {
 		trailsize = SPEED_NEEDLE_SIZE;
 	}
@@ -224,11 +224,8 @@ void draw_speedometer(double speed, uint8_t tick_brightness, uint8_t bar_brightn
 	}
 	else if (speed >= ((float)spdmax1))
 	{
-		float spd2 = speed - ((float)spdmax1);
-		headbright  = (spd2 * LED_STRIP_SIZE);
-		headbright  = fmodf(headbright, (float)(spdmax2 - spdmax1));
-		headbright *= bar_brightness;
-		headbright /= (float)(spdmax2 - spdmax1);
+		float rmd = speed - floor(speed);
+		headbright = rmd * bar_brightness;
 		headbrighti = bar_brightness - (int)lroundf(headbright);
 		// since the bar grows from right to left in this case,
 		// the "head" (on the right) is hidden by the final tick
