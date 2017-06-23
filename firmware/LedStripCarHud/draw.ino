@@ -181,7 +181,6 @@ void draw_speedometer(double speed, uint8_t tick_brightness, uint8_t bar_brightn
 	#ifdef FADING_HEAD
 	float headbright;
 	int32_t headbrighti;
-	float spdmin;
 	#endif
 	int trailsize;
 	int tickspeed = 10;
@@ -199,19 +198,6 @@ void draw_speedometer(double speed, uint8_t tick_brightness, uint8_t bar_brightn
 		trailsize = SPEED_NEEDLE_SIZE;
 	}
 
-	if (spd < (double)tickspeed)
-	{
-		// for speeds below the first tick, we have the zero point before the first tick
-		// because I want to hide the needle at 0 MPH
-		// by doing the math on the speed variable itself, it's easier to manage the fading head later
-		double lowspeeddiff = ((double)tickspeed) - spd;
-		double multip = (((double)SPEED_NEEDLE_SIZE)/((double)SPEED_TICK_SPACING * 2));
-		lowspeeddiff *= 1.0 + multip;
-		spd = ((double)tickspeed) - lowspeeddiff;
-		spdmin = ((double)tickspeed) * multip;
-		spdmin *= -1;
-	}
-
 	spd *= LED_STRIP_SIZE;
 	spd /= spdmax1;
 	#ifndef FADING_HEAD
@@ -221,23 +207,14 @@ void draw_speedometer(double speed, uint8_t tick_brightness, uint8_t bar_brightn
 	#endif
 
 	// for better UX, center of "needle" is the speed
-	addbar = SPEED_NEEDLE_SIZE + 1;
+	addbar = SPEED_NEEDLE_SIZE;
 	addbar /= 2;
 	baridx += addbar;
 
 	// if baridx is negative, we don't care
 
 	#ifdef FADING_HEAD
-	if (spd < ((double)tickspeed))
-	{
-		float spd2 = spd - spdmin; // spdmin is negative already
-		float spdrange = ((double)tickspeed) - spdmin;
-		headbright  = (spd2 * LED_STRIP_SIZE); // mathematically this doesn't make sense but the result is the same anyways
-		headbright  = fmodf(headbright, spdrange);
-		headbright *= bar_brightness;
-		headbright /= spdrange;
-	}
-	else if (spd < ((float)spdmax1))
+	if (speed < ((float)spdmax1))
 	{
 		headbright  = (speed * LED_STRIP_SIZE);
 		headbright  = fmodf(headbright, ((float)spdmax1));
@@ -245,7 +222,7 @@ void draw_speedometer(double speed, uint8_t tick_brightness, uint8_t bar_brightn
 		headbright /= ((float)spdmax1);
 		headbrighti = (int)lroundf(headbright);
 	}
-	else if (spd >= ((float)spdmax1))
+	else if (speed >= ((float)spdmax1))
 	{
 		float spd2 = speed - ((float)spdmax1);
 		headbright  = (spd2 * LED_STRIP_SIZE);
