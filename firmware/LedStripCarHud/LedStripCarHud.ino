@@ -142,8 +142,13 @@ void loop()
 		prev_car_on = false;
 		prev_ecu_on = false;
 		prev_dial = SHOWDIAL_NONE;
-		canbus_time = 0;
-		systick_millis_count = 0; // almost a reboot
+		while (millis() > 5) {
+			systick_millis_count = 0; // almost a reboot
+			// I should be disabling interrupts to do this
+			// but chances of failure is low
+			// and finding the right function call is hard for the Teensy 3
+		}
+		canbus_time = millis();
 		return;
 	}
 
