@@ -23,7 +23,7 @@ void dbg_canmsg(CAN_message_t* x)
 void dbg_strip(led_t* s, uint16_t len, uint8_t b)
 {
 	uint16_t i;
-	dbg_printf("=LEDs=[");
+	Serial.printf("=LEDs=[");
 	for (i = 0; i < len; i++)
 	{
 		uint8_t dbgc;
@@ -55,7 +55,7 @@ void dbg_strip(led_t* s, uint16_t len, uint8_t b)
 		else {
 			dbgc = '?';
 		}
-		dbg_printf("%c", dbgc);
+		Serial.printf("%c", dbgc);
 	}
-	dbg_printf("](%d)\r\n", b);
+	Serial.printf("](%d)\r\n", b);
 }

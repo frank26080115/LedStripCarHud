@@ -202,21 +202,23 @@ void test_tachometer(void)
 void test_speedometer(void)
 {
 	int32_t t;
+	double mph;
 	strip_init();
 	strip_setBrightness(0xFF);
 	strip_blank();
 	strip_show();
 	while (1)
 	{
-		for (t = 0; 122 >= calc_mph(t); t++)
+		for (t = 0; 80 >= calc_mph(t); t++)
 		{
-			draw_speedometer(calc_mph(t), 0xFF, 0xFF);
+			draw_speedometer(mph = calc_mph(t), 0xFF, 0xFF);
+			Serial.printf("%3.2f mph ", mph);
 			strip_show();
 			delay_ms(100);
 		}
 		for (; 0 <= t; t--)
 		{
-			draw_speedometer(calc_mph(t), 0xFF, 0xFF);
+			draw_speedometer(mph = calc_mph(t), 0xFF, 0xFF);
 			strip_show();
 			delay_ms(100);
 		}

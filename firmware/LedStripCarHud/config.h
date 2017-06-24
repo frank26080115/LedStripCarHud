@@ -17,7 +17,7 @@
 
 #define SPEED_TICK_SPACING   6
 #define SPEED_BACKFADE       8
-#define SPEED_NEEDLE_SIZE    3
+#define SPEED_NEEDLE_SIZE    2
 #define SPEED_MAX            120
 
 #define VOLTAGE_MIN    10.0
