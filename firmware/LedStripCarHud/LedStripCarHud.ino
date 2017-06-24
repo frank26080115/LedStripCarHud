@@ -137,18 +137,26 @@ void loop()
 		dbg_printf("ECU is not on, sleeping\r\n");
 		wipe_out(-1);
 		digitalWrite(PIN_HEARTBEAT, LOW);
-		sleep();
-		// restore states to seem like new
-		prev_car_on = false;
-		prev_ecu_on = false;
-		prev_dial = SHOWDIAL_NONE;
-		while (millis() > 5) {
-			systick_millis_count = 0; // almost a reboot
-			// I should be disabling interrupts to do this
-			// but chances of failure is low
-			// and finding the right function call is hard for the Teensy 3
+		if (voltage > 6)
+		{
+			// this is to prevent a USB re-enumeration annoyance, not really a bug
+			sleep();
+			// restore states to seem like new
+			prev_car_on = false;
+			prev_ecu_on = false;
+			prev_dial = SHOWDIAL_NONE;
+			while (millis() > 5) {
+				systick_millis_count = 0; // almost a reboot
+				// I should be disabling interrupts to do this
+				// but chances of failure is low
+				// and finding the right function call is hard for the Teensy 3
+			}
+			canbus_time = millis();
 		}
-		canbus_time = millis();
+		else {
+			delay_ms(WAKEUP_INTERVAL); // simulate sleep for the sake of LED blinks
+			// no change in any states here
+		}
 		return;
 	}
 
