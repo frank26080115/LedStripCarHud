@@ -196,7 +196,7 @@ void draw_speedometer(double speed, uint8_t tick_brightness, uint8_t bar_brightn
 	// I wanted to shift the needle another LED up
 	// this is a good way to do it without messing with the "addbar" variable
 	spdboost = ((double)spdmax1)/((double)LED_STRIP_SIZE);
-	spdboost += -0.0; // calibrate this on the bench
+	spdboost += -0.5; // calibrate this on the bench
 	if (spdboost < 0.0) {
 		spdboost = 0.0;
 	}
@@ -207,6 +207,17 @@ void draw_speedometer(double speed, uint8_t tick_brightness, uint8_t bar_brightn
 	if (trailsize < SPEED_NEEDLE_SIZE) {
 		trailsize = SPEED_NEEDLE_SIZE;
 	}
+
+	if (speed < 10.0)
+	{
+		// I don't want to apply the offset too early
+		// mainly because I still want the needle hidden at zero
+		spdboost *= speed;
+		spdboost /= 10.0;
+	}
+
+	spd += spdboost;
+	speed += spdboost;
 
 	spd *= LED_STRIP_SIZE;
 	spd /= spdmax1;
@@ -222,16 +233,6 @@ void draw_speedometer(double speed, uint8_t tick_brightness, uint8_t bar_brightn
 	baridx += addbar;
 
 	// if baridx is negative, we don't care
-
-	if (speed < 10.0)
-	{
-		// I don't want to apply the offset too early
-		// mainly because I still want the needle hidden at zero
-		spdboost *= speed;
-		spdboost /= 10.0;
-	}
-
-	speed += spdboost;
 
 	#ifdef FADING_HEAD
 	if (speed < ((float)spdmax1))

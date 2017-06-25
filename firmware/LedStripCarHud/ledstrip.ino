@@ -6,7 +6,7 @@ led_t led_strip[LED_STRIP_SIZE_VIRTUAL];
 
 uint32_t strip_power = 0;
 
-//#define DEBUG_STRIP
+#define DEBUG_STRIP
 
 void strip_init(void)
 {
