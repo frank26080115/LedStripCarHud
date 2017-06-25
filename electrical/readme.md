@@ -16,3 +16,7 @@ This is a rough list, may not be complete. Check the schematic, and also fill in
  * Power Switch is a S802C21S207Q
  * 3mm LED for heartbeat, plus a 1K resistor to limit the current to this LED
  * Wires, passive components, pin headers, chip socket
+
+## Notes ##
+
+ * Remove the LED from the Teensy. It is shared with SCK (SPI clock), removing the LED will remove some load and capacitance from that signal. Do this if you find the clock signal to be weak (low amplitude and/or too much slope). I honestly don't know if this is even a real problem but I've gotten into this habit (remove LEDs) on all Arduino products, the resistors used on the LEDs always have too low of a resistance and causes problems.
