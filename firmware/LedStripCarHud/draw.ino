@@ -247,7 +247,7 @@ void draw_speedometer(double speed, uint8_t tick_brightness, uint8_t bar_brightn
 	{
 		float rmd = speed - floor(speed);
 		headbright = rmd * bar_brightness;
-		headbrighti = bar_brightness - (int)lroundf(headbright);
+		headbrighti = (int)lroundf(headbright);
 		// since the bar grows from right to left in this case,
 		// the "head" (on the right) is hidden by the final tick
 		// what we actually care about is the dimming of the "tail" (on the left)
