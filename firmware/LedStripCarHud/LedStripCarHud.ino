@@ -33,6 +33,7 @@ void loop()
 {
 	static int32_t canbus_time = 0;
 	static int32_t step_timer = 0;
+	static int32_t demo_timer = 0;
 	static char prev_car_on = false, prev_ecu_on = true;
 	int16_t brightness;
 	char car_is_on;
@@ -173,6 +174,12 @@ void loop()
 			}
 		}
 
+		if (demo_timer != 0 && (now - demo_timer) > 5000) { // floor it for a few seconds to activate demo
+			demo();
+			demo_timer = 0;
+			return; // the demo function is a long blocking function, all variables are now out of date, loop again
+		}
+
 		if (kmh > 0) // is moving
 		{
 			dial = SHOWDIAL_SPEED;
@@ -198,6 +205,19 @@ void loop()
 		else if (dial == SHOWDIAL_NONE) {
 			dbg_printf("odd... nothing shown\r\n");
 			dial = SHOWDIAL_SPEED;
+		}
+
+		if (rpm <= 0 && kmh <= 0 && pedal > 100)
+		{
+			// activate demo by flooring it while the engine is off
+			if (demo_timer == 0)
+			{
+				demo_timer = now;
+			}
+		}
+		else
+		{
+			demo_timer = 0;
 		}
 	}
 
