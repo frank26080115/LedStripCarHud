@@ -5,9 +5,9 @@ void demo(void)
 	int rpm, kmh;
 	float voltage;
 	double mph;
-	strip_setBrightness(0x80);
+	strip_setBrightness(0x60);
 	wipe_out(-1);
-	delay_ms(3000);
+	if (delay_ms_waitmove(3000)) return;
 	while (1)
 	{
 		i = 0;
@@ -20,48 +20,48 @@ void demo(void)
 			}
 			i++;
 		}
-		while (animation_active != false);
+		while (animation_active != false && canbus_ismoving() == false);
 		strip_blank();
 		strip_show();
-		delay_ms(2000);
+		if (delay_ms_waitmove(2000)) return;
 		voltage = 11.8;
 		draw_voltage_fadein(voltage, 0xFF, 0xFF);
-		delay_ms(3000);
-		for (; voltage >= 10.5; voltage -= 0.2)
+		if (delay_ms_waitmove(3000)) return;
+		for (; voltage >= 10.5 && canbus_ismoving() == false; voltage -= 0.2)
 		{
 			draw_voltage(voltage, 0xFF, 0xFF);
 			strip_show();
 			delay_ms(50);
 		}
-		for (i = 0; voltage <= 12.8; voltage += 0.1, i += 3)
+		for (i = 0; voltage <= 12.8 && canbus_ismoving() == false; voltage += 0.1, i += 3)
 		{
 			draw_voltage(voltage, 0xFF, 0xFF);
 			strip_show();
 			delay_ms(20 + i);
 		}
-		delay_ms(800);
+		if (delay_ms_waitmove(800)) return;
 		wipe_out(4);
 		rpm = 500;
 		draw_tachometer_fadein(rpm);
-		for (; rpm <= 4500; rpm += 15)
+		for (; rpm <= 4500 && canbus_ismoving() == false; rpm += 15)
 		{
 			draw_tachometer(rpm);
 			strip_show();
 			delay_ms(2000 / 500);
 		}
-		for (; rpm >= 2000; rpm -= 8)
+		for (; rpm >= 2000 && canbus_ismoving() == false; rpm -= 8)
 		{
 			draw_tachometer(rpm);
 			strip_show();
 			delay_ms(2000 / 500);
 		}
-		for (; rpm <= RPM_MAX - 50; rpm += 12)
+		for (; rpm <= RPM_MAX - 50 && canbus_ismoving() == false; rpm += 12)
 		{
 			draw_tachometer(rpm);
 			strip_show();
 			delay_ms(2000 / 500);
 		}
-		for (; rpm >= 500; rpm -= 8)
+		for (; rpm >= 500 && canbus_ismoving() == false; rpm -= 8)
 		{
 			draw_tachometer(rpm);
 			strip_show();
@@ -71,70 +71,83 @@ void demo(void)
 		kmh = 0;
 		mph = 0;
 		draw_speed_fadein_random(0xFF);
-		for (; mph <= 15; kmh++) {
+		for (; mph <= 15 && canbus_ismoving() == false; kmh++) {
 			mph = calc_mph(kmh);
 			draw_speedometer(mph, 0xFF, 0xFF);
 			strip_show();
 			delay_ms(250);
 		}
-		for (; mph <= 40; kmh++) {
+		for (; mph <= 40 && canbus_ismoving() == false; kmh++) {
 			mph = calc_mph(kmh);
 			draw_speedometer(mph, 0xFF, 0xFF);
 			strip_show();
 			delay_ms(125);
 		}
-		for (; mph >= 35; kmh--) {
+		for (; mph >= 35 && canbus_ismoving() == false; kmh--) {
 			mph = calc_mph(kmh);
 			draw_speedometer(mph, 0xFF, 0xFF);
 			strip_show();
 			delay_ms(200);
 		}
-		for (; mph <= 38; kmh++) {
+		for (; mph <= 38 && canbus_ismoving() == false; kmh++) {
 			mph = calc_mph(kmh);
 			draw_speedometer(mph, 0xFF, 0xFF);
 			strip_show();
 			delay_ms(200);
 		}
-		for (; mph >= 36; kmh--) {
+		for (; mph >= 36 && canbus_ismoving() == false; kmh--) {
 			mph = calc_mph(kmh);
 			draw_speedometer(mph, 0xFF, 0xFF);
 			strip_show();
 			delay_ms(200);
 		}
-		for (; mph <= 80; kmh++) {
+		for (; mph <= 80 && canbus_ismoving() == false; kmh++) {
 			mph = calc_mph(kmh);
 			draw_speedometer(mph, 0xFF, 0xFF);
 			strip_show();
 			delay_ms(125);
 		}
-		for (; mph >= 72; kmh--) {
+		for (; mph >= 72 && canbus_ismoving() == false; kmh--) {
 			mph = calc_mph(kmh);
 			draw_speedometer(mph, 0xFF, 0xFF);
 			strip_show();
 			delay_ms(200);
 		}
-		for (; mph <= 100; kmh++) {
+		for (; mph <= 100 && canbus_ismoving() == false; kmh++) {
 			mph = calc_mph(kmh);
 			draw_speedometer(mph, 0xFF, 0xFF);
 			strip_show();
 			delay_ms(125);
 		}
-		for (; mph >= 0; kmh--) {
+		for (; mph >= 0 && canbus_ismoving() == false; kmh--) {
 			mph = calc_mph(kmh);
 			draw_speedometer(mph, 0xFF, 0xFF);
 			strip_show();
-			delay_ms(120);
+			delay_ms(50);
 		}
-		delay_ms(3000);
+		if (delay_ms_waitmove(3000)) return;
 		wipe_out(1);
 		voltage = 12.2;
 		draw_voltage_fadein(voltage, 0xFF, 0xFF);
 		draw_voltage(voltage, 0xFF, 0xFF);
 		strip_show();
-		delay_ms(2000);
+		if (delay_ms_waitmove(2000)) return;
 		wipe_out(4);
-		delay_ms(5000);
+		if (delay_ms_waitmove(5000)) return;
 
 		break;
 	}
+}
+
+bool delay_ms_waitmove(int32_t x)
+{
+	while (x > 0)
+	{
+		if (canbus_ismoving()) {
+			return true;
+		}
+		delay_ms(100);
+		x -= 100;
+	}
+	return false;
 }

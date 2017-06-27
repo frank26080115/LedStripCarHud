@@ -29,6 +29,15 @@ bool canbus_readAll(int* kmh, int* rpm, int* pedal)
 	return true;
 }
 
+bool canbus_ismoving(void)
+{
+	int kmh;
+	if (canbus_readAll(&kmh, NULL, NULL)) {
+		return kmh > 0;
+	}
+	return false;
+}
+
 class EcuListener : public CANListener 
 {
 	public:

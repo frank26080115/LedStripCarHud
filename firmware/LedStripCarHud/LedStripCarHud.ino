@@ -46,6 +46,7 @@ void loop()
 	static uint8_t prev_dial = SHOWDIAL_NONE;
 	uint8_t dial = prev_dial;
 	static bool dbg_latched = false;
+	int32_t heartrate = 500;
 
 	now = millis();
 
@@ -70,8 +71,15 @@ void loop()
 		pedal_track(pedal, rpm);
 	}
 	pedal = get_pedal();
+	heartrate = 500;
+	if (pedal > 100) {
+		heartrate = 100;
+	}
+	else if (pedal > 50) {
+		heartrate = 250;
+	}
 
-	if (((now / 500) % 2) == 0) {
+	if (((now / heartrate) % 2) == 0) {
 		if (dbg_latched == false) {
 			dbg_printf("%ul, %d, %d, %3.1f, %d, %d, %2.1f, \r\n", now, rpm, kmh, mph, pedal, brightness, voltage);
 		}
@@ -177,6 +185,7 @@ void loop()
 		if (demo_timer != 0 && (now - demo_timer) > 5000) { // floor it for a few seconds to activate demo
 			demo();
 			demo_timer = 0;
+			prev_dial = SHOWDIAL_NONE;
 			return; // the demo function is a long blocking function, all variables are now out of date, loop again
 		}
 
