@@ -47,6 +47,7 @@ void loop()
 	uint8_t dial = prev_dial;
 	static bool dbg_latched = false;
 	int32_t heartrate = 500;
+	static int dynamic_timeout = CANBUS_ECU_TIMEOUT;
 
 	now = millis();
 
@@ -102,7 +103,7 @@ void loop()
 	}
 	else if (canbus_good == false)
 	{
-		if ((now > canbus_time) && (now - canbus_time) > CANBUS_ECU_TIMEOUT)
+		if ((now > canbus_time) && (now - canbus_time) > dynamic_timeout)
 		{
 			car_is_on = false;
 			ecu_is_on = false;
@@ -161,6 +162,7 @@ void loop()
 				// and finding the right function call is hard for the Teensy 3
 			}
 			canbus_time = millis();
+			dynamic_timeout = CANBUS_ECU_TIMEOUT * 20;
 		}
 		else {
 			delay_ms(WAKEUP_INTERVAL); // simulate sleep for the sake of LED blinks
@@ -227,6 +229,10 @@ void loop()
 		else
 		{
 			demo_timer = 0;
+		}
+
+		if (kmh > 0 || rpm > 0) {
+			dynamic_timeout = CANBUS_ECU_TIMEOUT;
 		}
 	}
 
