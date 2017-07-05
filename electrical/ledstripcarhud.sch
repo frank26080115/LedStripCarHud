@@ -3357,6 +3357,20 @@ not on the circuit board</text>
 which may be different</text>
 <text x="-10.16" y="-22.86" size="1.778" layer="97" rot="R90">six of these pots are in my circuit
 but I only used four</text>
+<text x="228.6" y="-66.04" size="1.778" layer="94">This file is part of LedStripCarHud
+
+LedStripCarHud is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+LedStripCarHud is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with LedStripCarHud.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</text>
 </plain>
 <instances>
 <instance part="U1" gate="G$1" x="68.58" y="50.8"/>

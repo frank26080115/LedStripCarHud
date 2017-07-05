@@ -7,3 +7,7 @@ Libraries:
  * FastLED, version 3001005
  * FlexCAN, collin80's fork, master branch commit 9458e8e397b2ad682b9c96ed23c567abd488615f
  * Snooze, unknown which version is installed
+
+License:
+
+ GPL v3, see LICENSE.TXT
